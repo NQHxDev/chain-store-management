@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 import AuthBootstrap from '@/components/auth/AuthBootstrap';
-import HeaderGate from '@/components/header/headerGate';
+import Header from '@/components/header/header';
 
 const subscribe = () => () => {};
 const getSnapshot = () => true;
@@ -26,7 +26,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
    return (
       <>
          <AuthBootstrap />
-         <HeaderGate />
+         <Header />
          {children}
       </>
    );

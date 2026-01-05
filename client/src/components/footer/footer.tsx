@@ -84,7 +84,7 @@ export default function Footer() {
                      <div>
                         <h3 className="font-bold text-gray-900 mb-1">Giao hàng nhanh chóng</h3>
                         <p className="text-sm text-gray-600">
-                           Nhận sản phẩm trong vòng 5-10 phút sau khi mua
+                           Nhận sản phẩm từ 10 - 60 phút sau khi mua hàng
                         </p>
                      </div>
                   </div>
@@ -99,13 +99,13 @@ export default function Footer() {
                <div>
                   <Link href="/" className="inline-block mb-4">
                      <span className="text-xl font-bold tracking-tight text-black">
-                        WebStore
-                        <span className="text-neutral-500">Game</span>
+                        Zeion
+                        <span className="text-neutral-500">Store</span>
                      </span>
                   </Link>
                   <p className="text-gray-600 mb-6 text-sm">
-                     Hệ thống cửa hàng trò chơi trực tuyến uy tín hàng đầu Việt Nam. Cung cấp đa
-                     dạng sản phẩm game với chất lượng và dịch vụ tốt nhất.
+                     Hệ thống cửa hàng tiện lợi trực tuyến uy tín hàng đầu Việt Nam. Cung cấp đa
+                     dạng sản phẩm với chất lượng và dịch vụ tốt nhất.
                   </p>
                   <div className="flex space-x-4">
                      <a
@@ -196,7 +196,7 @@ export default function Footer() {
                            href="/new-releases"
                            className="text-gray-600 hover:text-black transition-colors text-sm"
                         >
-                           Game mới
+                           Sản phẩm mới
                         </Link>
                      </li>
                   </ul>
@@ -295,7 +295,7 @@ export default function Footer() {
                               d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                            />
                         </svg>
-                        <span className="text-gray-600 text-sm">support@webstoregame.com</span>
+                        <span className="text-gray-600 text-sm">support@zeionstore.com</span>
                      </li>
                      <li className="flex items-center gap-3">
                         <svg
@@ -324,21 +324,21 @@ export default function Footer() {
             <div className="mx-auto max-w-7xl px-4 py-6">
                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="text-gray-500 text-sm">
-                     © {currentYear} WebStoreGame. Tất cả các quyền được bảo lưu.
+                     © {currentYear} ZeionStore. Tất cả các quyền được bảo lưu
                   </div>
 
                   <div className="flex flex-wrap items-center gap-6 text-sm">
-                     <Link
-                        href="/privacy"
-                        className="text-gray-500 hover:text-black transition-colors"
-                     >
-                        Chính sách bảo mật
-                     </Link>
                      <Link
                         href="/terms"
                         className="text-gray-500 hover:text-black transition-colors"
                      >
                         Điều khoản dịch vụ
+                     </Link>
+                     <Link
+                        href="/privacy"
+                        className="text-gray-500 hover:text-black transition-colors"
+                     >
+                        Chính sách bảo mật
                      </Link>
                      <Link
                         href="/purchase-policy"
