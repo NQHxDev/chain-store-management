@@ -1,0 +1,29 @@
+import type { Metadata } from 'next';
+import { Be_Vietnam_Pro } from 'next/font/google';
+import './globals.css';
+
+import { Toaster } from '@/components/ui/sonner';
+import Providers from '@/app/providers';
+
+const beVietnamPro = Be_Vietnam_Pro({
+   subsets: ['latin', 'vietnamese'],
+   weight: ['400', '500', '700'],
+   display: 'swap',
+   variable: '--font-be-vietnam-pro',
+});
+
+export const metadata: Metadata = {
+   title: 'WebStore',
+   description: 'Nơi bạn có thể tìm thấy mọi thứ bạn cần!',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+   return (
+      <html lang="en" className={beVietnamPro.variable}>
+         <body className="antialiased">
+            <Providers>{children}</Providers>
+            <Toaster richColors position="bottom-right" />
+         </body>
+      </html>
+   );
+}

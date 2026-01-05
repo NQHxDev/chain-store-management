@@ -1,0 +1,38 @@
+services:
+   mysql:
+      image: mysql:8.0
+      container_name: mysql_dev
+      restart: unless-stopped
+      environment:
+         MYSQL_ROOT_PASSWORD: root
+         MYSQL_DATABASE: store_game
+         MYSQL_USER: app
+         MYSQL_PASSWORD: 582005
+      ports:
+         - '3306:3306'
+      volumes:
+         - mysql_data:/var/lib/mysql
+
+   redis:
+      image: redis:7
+      container_name: redis_dev
+      restart: unless-stopped
+      command: redis-server --requirepass 582005
+      ports:
+         - '6379:6379'
+
+   backend:
+      build:
+         context: ./server
+      container_name: backend_dev
+      restart: unless-stopped
+      ports:
+         - '5000:5000'
+      env_file:
+         - ./server/.env
+      depends_on:
+         - mysql
+         - redis
+
+volumes:
+   mysql_data:
