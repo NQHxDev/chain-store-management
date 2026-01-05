@@ -16,10 +16,27 @@ type AuthState = {
    setHydrated: (v: boolean) => void;
 };
 
+const isDev: boolean = process.env.NODE_ENV === 'development';
+
+const initialState = isDev
+   ? {
+        user: {
+           ac_id: '1',
+           username: 'anhjkr',
+           email: 'admin@example.com',
+           roles: [{ role_id: 1 }],
+        },
+        accessToken: 'fake-token-for-testing',
+        hydrated: true,
+     }
+   : {
+        user: null,
+        accessToken: null,
+        hydrated: false,
+     };
+
 export const useAuthStore = create<AuthState>((set) => ({
-   user: null,
-   accessToken: null,
-   hydrated: false,
+   ...initialState,
 
    setAuth: (user, token) =>
       set({
