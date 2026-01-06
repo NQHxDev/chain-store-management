@@ -1,78 +1,21 @@
-// app/store-policy/page.tsx
-'use client';
-
-import { useState } from 'react';
 import {
-   FaStore,
-   FaShippingFast,
    FaCalendarAlt,
    FaChartLine,
-   FaExclamationTriangle,
    FaCheckCircle,
-   FaTimesCircle,
+   FaExclamationTriangle,
+   FaQuestionCircle,
+   FaShippingFast,
+   FaStore,
 } from 'react-icons/fa';
-
+import StorePolicyClient from './StorePolicyClient';
 import { storePolicies, shippingMethods, supportChannels } from '@/lib/policies/StorePolicy';
+import IConMaps from '@/lib/iconMap';
 
 export default function StorePolicyPage() {
-   const [activeCategory, setActiveCategory] = useState('all');
-   const [showAllDetails, setShowAllDetails] = useState(false);
-
-   // Danh mục
-   const categories = [
-      { id: 'all', name: 'Tất cả', count: storePolicies.length },
-      {
-         id: 'mua-hang',
-         name: 'Mua hàng',
-         count: storePolicies.filter((p) => p.category === 'mua-hang').length,
-      },
-      {
-         id: 'giao-nhan',
-         name: 'Giao nhận',
-         count: storePolicies.filter((p) => p.category === 'giao-nhan').length,
-      },
-      {
-         id: 'bao-hanh',
-         name: 'Bảo hành',
-         count: storePolicies.filter((p) => p.category === 'bao-hanh').length,
-      },
-      {
-         id: 'doi-tra',
-         name: 'Đổi trả',
-         count: storePolicies.filter((p) => p.category === 'doi-tra').length,
-      },
-      {
-         id: 'khuyen-mai',
-         name: 'Khuyến mãi',
-         count: storePolicies.filter((p) => p.category === 'khuyen-mai').length,
-      },
-      {
-         id: 'quyen-loi',
-         name: 'Quyền lợi',
-         count: storePolicies.filter((p) => p.category === 'quyen-loi').length,
-      },
-      {
-         id: 'bao-mat',
-         name: 'Bảo mật',
-         count: storePolicies.filter((p) => p.category === 'bao-mat').length,
-      },
-      {
-         id: 'ho-tro',
-         name: 'Hỗ trợ',
-         count: storePolicies.filter((p) => p.category === 'ho-tro').length,
-      },
-   ];
-
-   // Lọc chính sách theo danh mục
-   const filteredPolicies =
-      activeCategory === 'all'
-         ? storePolicies
-         : storePolicies.filter((policy) => policy.category === activeCategory);
-
    return (
       <>
-         <h1 className="text-3xl font-bold mb-2 text-gray-900">Chính sách cửa hàng</h1>
-         <p className="text-gray-500 mb-8">Quy định và cam kết dịch vụ từ WebStoreGame</p>
+         <h1 className="text-3xl font-bold mb-2">Chính sách cửa hàng</h1>
+         <p className="text-gray-500 mb-8">Quy định và cam kết dịch vụ từ ZeionStore</p>
 
          <section className="space-y-10 text-gray-700">
             <div className="prose prose-lg max-w-none">
@@ -145,121 +88,11 @@ export default function StorePolicyPage() {
                   </div>
                </div>
 
-               {/* Categories */}
-               <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Danh mục chính sách</h3>
-                  <div className="flex flex-wrap gap-3">
-                     {categories.map((category) => (
-                        <button
-                           key={category.id}
-                           onClick={() => setActiveCategory(category.id)}
-                           className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                              activeCategory === category.id
-                                 ? 'bg-black text-white border-black'
-                                 : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                           }`}
-                        >
-                           <span>{category.name}</span>
-                           <span
-                              className={`text-xs px-2 py-0.5 rounded-full ${
-                                 activeCategory === category.id
-                                    ? 'bg-white/20'
-                                    : 'bg-gray-100 text-gray-600'
-                              }`}
-                           >
-                              {category.count}
-                           </span>
-                        </button>
-                     ))}
-                  </div>
-               </div>
-
-               {/* Policies Grid */}
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                  {filteredPolicies.map((policy) => {
-                     const Icon = policy.icon;
-
-                     return (
-                        <div
-                           key={policy.id}
-                           className={`bg-white border rounded-2xl p-6 transition-all hover:shadow-sm ${
-                              policy.important
-                                 ? 'border-purple-200 bg-linear-to-br from-purple-50 to-white'
-                                 : 'border-gray-200'
-                           }`}
-                        >
-                           <div className="flex items-start gap-4 mb-4">
-                              <div
-                                 className={`h-12 w-12 rounded-full flex items-center justify-center ${
-                                    policy.important
-                                       ? 'bg-purple-100 text-purple-600'
-                                       : 'bg-gray-100 text-gray-600'
-                                 }`}
-                              >
-                                 <Icon className="h-6 w-6" />
-                              </div>
-
-                              <div className="flex-1">
-                                 <div className="flex items-start justify-between">
-                                    <div>
-                                       <h3 className="text-lg font-semibold text-gray-900">
-                                          {policy.title}
-                                       </h3>
-                                       <p className="text-sm text-gray-600 mt-1">
-                                          {policy.description}
-                                       </p>
-                                    </div>
-                                    {policy.important && (
-                                       <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full">
-                                          Quan trọng
-                                       </span>
-                                    )}
-                                 </div>
-
-                                 <div className="flex items-center gap-3 mt-3 text-xs text-gray-500">
-                                    <FaCalendarAlt className="h-3 w-3" />
-                                    <span>Cập nhật: {policy.lastUpdated}</span>
-                                 </div>
-                              </div>
-                           </div>
-
-                           <div className="space-y-3">
-                              {policy.details
-                                 .slice(0, showAllDetails ? policy.details.length : 3)
-                                 .map((detail, idx) => (
-                                    <div key={idx} className="flex items-start gap-3">
-                                       <div
-                                          className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                                             policy.important
-                                                ? 'bg-purple-100 text-purple-600'
-                                                : 'bg-gray-100 text-gray-600'
-                                          }`}
-                                       >
-                                          {detail.includes('Không') || detail.includes('không') ? (
-                                             <FaTimesCircle className="h-3 w-3" />
-                                          ) : (
-                                             <FaCheckCircle className="h-3 w-3" />
-                                          )}
-                                       </div>
-                                       <span className="text-sm text-gray-700">{detail}</span>
-                                    </div>
-                                 ))}
-                           </div>
-
-                           {policy.details.length > 3 && (
-                              <button
-                                 onClick={() => setShowAllDetails(!showAllDetails)}
-                                 className="mt-4 text-sm text-purple-600 hover:text-purple-800 font-medium"
-                              >
-                                 {showAllDetails
-                                    ? 'Thu gọn'
-                                    : `Xem thêm ${policy.details.length - 3} điều khoản`}
-                              </button>
-                           )}
-                        </div>
-                     );
-                  })}
-               </div>
+               <StorePolicyClient
+                  policies={storePolicies}
+                  shippingMethods={shippingMethods}
+                  supportChannels={supportChannels}
+               />
 
                {/* Shipping Methods */}
                <div className="mb-10">
@@ -337,7 +170,7 @@ export default function StorePolicyPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                      {supportChannels.map((channel) => {
-                        const Icon = channel.icon;
+                        const IconComponent = IConMaps[channel.icon] ?? FaQuestionCircle;
                         return (
                            <div
                               key={channel.id}
@@ -345,7 +178,7 @@ export default function StorePolicyPage() {
                            >
                               <div className="flex items-center gap-3 mb-3">
                                  <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <Icon className="h-5 w-5" />
+                                    <IconComponent className="h-5 w-5" />
                                  </div>
                                  <div>
                                     <h4 className="font-semibold text-gray-900">{channel.name}</h4>
@@ -539,25 +372,28 @@ export default function StorePolicyPage() {
                      </div>
                   </div>
 
-                  <div className="bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-2xl p-6">
-                     <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center mb-4">
-                        <FaStore className="h-6 w-6" />
+                  <div className="bg-gray-100 border border-gray-200 text-gray-900 rounded-2xl p-6">
+                     <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center mb-4">
+                        <FaStore className="h-6 w-6 text-gray-700" />
                      </div>
+
                      <h3 className="text-xl font-bold mb-3">Cần giải đáp về chính sách?</h3>
-                     <p className="text-purple-100 mb-6">
+
+                     <p className="text-gray-600 mb-6">
                         Đội ngũ hỗ trợ của WebStoreGame luôn sẵn sàng giải đáp mọi thắc mắc về chính
                         sách cửa hàng.
                      </p>
+
                      <div className="flex flex-col sm:flex-row gap-3">
                         <a
                            href="/contact"
-                           className="px-6 py-3 bg-white text-gray-900 font-medium rounded-lg hover:bg-gray-100 transition-colors text-center"
+                           className="px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors text-center"
                         >
                            Liên hệ hỗ trợ
                         </a>
                         <a
                            href="/faq"
-                           className="px-6 py-3 bg-transparent border-2 border-white text-white font-medium rounded-lg hover:bg-white/10 transition-colors text-center"
+                           className="px-6 py-3 bg-transparent border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-colors text-center"
                         >
                            Truy cập FAQ
                         </a>

@@ -1,4 +1,6 @@
-interface FAQItem {
+import { IconType } from 'react-icons';
+
+export interface FAQStore {
    id: number;
    question: string;
    answer: string;
@@ -8,7 +10,14 @@ interface FAQItem {
    updatedAt: string;
 }
 
-const faqItems: FAQItem[] = [
+export type CategoryFilterItem = {
+   id: string;
+   name: string;
+   count: number;
+   icon: IconType;
+};
+
+const faqStories: FAQStore[] = [
    {
       id: 1,
       question: 'Làm thế nào để đăng ký tài khoản ZeionStore?',
@@ -161,4 +170,4 @@ const faqItems: FAQItem[] = [
    },
 ];
 
-export default faqItems;
+export default faqStories;

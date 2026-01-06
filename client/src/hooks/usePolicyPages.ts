@@ -2,7 +2,6 @@ import {
    FaFileContract,
    FaShieldAlt,
    FaQuestionCircle,
-   FaLock,
    FaExchangeAlt,
    FaStore,
 } from 'react-icons/fa';
@@ -38,13 +37,6 @@ export const usePolicyPages = () => {
          path: '/faq',
          icon: FaQuestionCircle,
          description: 'Giải đáp thắc mắc',
-      },
-      {
-         id: 'security',
-         title: 'Bảo mật & An toàn',
-         path: '/security',
-         icon: FaLock,
-         description: 'Chính sách bảo mật tài khoản',
       },
       {
          id: 'refund',

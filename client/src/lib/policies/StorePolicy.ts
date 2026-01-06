@@ -1,29 +1,15 @@
-import { IconType } from 'react-icons';
-
-import {
-   FaShoppingCart,
-   FaHeadset,
-   FaShieldAlt,
-   FaTag,
-   FaGift,
-   FaShippingFast,
-   FaBoxOpen,
-   FaCalendarAlt,
-   FaQuestionCircle,
-} from 'react-icons/fa';
-
-interface StorePolicy {
+export interface StorePolicy {
    id: number;
    category: string;
    title: string;
    description: string;
    details: string[];
-   icon: IconType;
+   icon: string;
    lastUpdated: string;
    important: boolean;
 }
 
-interface ShippingMethod {
+export interface ShippingMethod {
    id: number;
    name: string;
    deliveryTime: string;
@@ -33,13 +19,13 @@ interface ShippingMethod {
    tracking: boolean;
 }
 
-interface SupportChannel {
+export interface SupportChannel {
    id: number;
    name: string;
    description: string;
    responseTime: string;
    hours: string;
-   icon: IconType;
+   icon: string;
    contact: string;
 }
 
@@ -57,7 +43,7 @@ const storePolicies: StorePolicy[] = [
          'Chấp nhận mọi hình thức thanh toán hợp pháp tại Việt Nam',
       ],
       // icon: <FaShoppingCart className="h-6 w-6" />,
-      icon: FaShoppingCart,
+      icon: 'FaShoppingCart',
       lastUpdated: '2024-01-22',
       important: true,
    },
@@ -73,7 +59,7 @@ const storePolicies: StorePolicy[] = [
          'Không giao hàng vật lý trừ khi có thông báo đặc biệt',
          'Chịu trách nhiệm giao key chính xác và đầy đủ',
       ],
-      icon: FaShippingFast,
+      icon: 'FaShippingFast',
       lastUpdated: '2024-01-20',
       important: true,
    },
@@ -89,7 +75,7 @@ const storePolicies: StorePolicy[] = [
          'Không bảo hành lỗi do người dùng hoặc hệ thống bên thứ ba',
          'Hỗ trợ kỹ thuật cơ bản cho vấn đề kích hoạt',
       ],
-      icon: FaShieldAlt,
+      icon: 'FaShieldAlt',
       lastUpdated: '2024-01-18',
       important: true,
    },
@@ -105,7 +91,7 @@ const storePolicies: StorePolicy[] = [
          'Mỗi tài khoản tối đa 3 lần đổi trả/năm',
          'Thời gian xử lý đổi trả: 1-3 ngày làm việc',
       ],
-      icon: FaBoxOpen,
+      icon: 'FaBoxOpen',
       lastUpdated: '2024-01-16',
       important: true,
    },
@@ -121,7 +107,7 @@ const storePolicies: StorePolicy[] = [
          'WebStoreGame có quyền hủy mã khuyến mãi nếu phát hiện lạm dụng',
          'Không hoàn tiền chênh lệch sau khi sử dụng mã khuyến mãi',
       ],
-      icon: FaTag,
+      icon: 'FaTag',
       lastUpdated: '2024-01-14',
       important: false,
    },
@@ -137,7 +123,7 @@ const storePolicies: StorePolicy[] = [
          'Nhận thông báo sớm về game mới và deal hot',
          'Hỗ trợ ưu tiên từ đội ngũ chăm sóc khách hàng',
       ],
-      icon: FaGift,
+      icon: 'FaGift',
       lastUpdated: '2024-01-12',
       important: false,
    },
@@ -153,7 +139,7 @@ const storePolicies: StorePolicy[] = [
          'Giám sát 24/7 để phát hiện gian lận',
          'Báo cáo ngay nếu phát hiện giao dịch đáng ngờ',
       ],
-      icon: FaShieldAlt,
+      icon: 'FaShieldAlt',
       lastUpdated: '2024-01-10',
       important: true,
    },
@@ -169,7 +155,7 @@ const storePolicies: StorePolicy[] = [
          'Hỗ trợ đa ngôn ngữ: Tiếng Việt, Tiếng Anh',
          'Giải quyết 95% yêu cầu trong vòng 24 giờ',
       ],
-      icon: FaHeadset,
+      icon: 'FaHeadset',
       lastUpdated: '2024-01-08',
       important: true,
    },
@@ -212,7 +198,7 @@ const supportChannels: SupportChannel[] = [
       description: 'Hỗ trợ nhanh chóng, giải đáp ngay lập tức',
       responseTime: '2-5 phút',
       hours: '24/7',
-      icon: FaHeadset,
+      icon: 'FaHeadset',
       contact: 'Nhấp vào icon chat góc phải màn hình',
    },
    {
@@ -221,7 +207,7 @@ const supportChannels: SupportChannel[] = [
       description: 'Gửi yêu cầu chi tiết, đính kèm file',
       responseTime: '24 giờ',
       hours: '24/7',
-      icon: FaCalendarAlt,
+      icon: 'FaCalendarAlt',
       contact: 'support@webstoregame.com',
    },
    {
@@ -230,7 +216,7 @@ const supportChannels: SupportChannel[] = [
       description: 'Hỗ trợ khẩn cấp, vấn đề thanh toán',
       responseTime: '5 phút',
       hours: '8:00 - 22:00',
-      icon: FaHeadset,
+      icon: 'FaHeadset',
       contact: '+84 966 376 155',
    },
    {
@@ -239,7 +225,7 @@ const supportChannels: SupportChannel[] = [
       description: 'Tự giải đáp thắc mắc, hướng dẫn chi tiết',
       responseTime: 'Tức thì',
       hours: '24/7',
-      icon: FaQuestionCircle,
+      icon: 'FaQuestionCircle',
       contact: '/faq',
    },
 ];
