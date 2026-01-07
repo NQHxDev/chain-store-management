@@ -1,34 +1,34 @@
-'use client';
-
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
-import { useEffect, useRef, useState } from 'react';
 import { AuthService } from '@/services/authService';
 import { useRouter } from 'next/navigation';
+
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuGroup,
+   DropdownMenuItem,
+   DropdownMenuLabel,
+   DropdownMenuPortal,
+   DropdownMenuSeparator,
+   DropdownMenuSub,
+   DropdownMenuSubContent,
+   DropdownMenuSubTrigger,
+   DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { hasAnyRole } from '@/lib/auth/Role';
+import { LogOut } from 'lucide-react';
 
 export default function HeaderAuth() {
    const router = useRouter();
 
    const { user, hydrated, clearAuth } = useAuthStore();
-   const [open, setOpen] = useState(false);
-   const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-   useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-            setOpen(false);
-         }
-      };
-
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-   }, []);
 
    const handleLogout = async () => {
       try {
          await AuthService.logout();
       } catch {}
-      setOpen(false);
       clearAuth();
       router.push('/');
    };
@@ -62,6 +62,37 @@ export default function HeaderAuth() {
       );
    }
 
+   const renderManagerPanel = () => {
+      if (!hasAnyRole(user.roles, ['admin', 'manager'])) return null;
+
+      return (
+         <>
+            <DropdownMenuGroup>
+               <div className="flex items-center justify-center px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+                  Manager Panel
+               </div>
+               <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="cursor-pointer">
+                     <span>Quản lý hệ thống</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                     <DropdownMenuSubContent className="min-w-45">
+                        <DropdownMenuItem className="cursor-pointer">Đơn hàng</DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">Sản phẩm</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="cursor-pointer text-blue-500">
+                           Báo cáo doanh thu
+                        </DropdownMenuItem>
+                     </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+               </DropdownMenuSub>
+               <DropdownMenuItem className="cursor-pointer">Cài đặt chung</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+         </>
+      );
+   };
+
    return (
       <div className="flex items-center gap-2 relative">
          <button
@@ -84,61 +115,75 @@ export default function HeaderAuth() {
             </svg>
             <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500"></span>
          </button>
-         <button
-            onClick={() => setOpen(!open)}
-            className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-gray-100"
-         >
-            <div className="h-8 w-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-bold">
-               {user.username.charAt(0).toUpperCase()}
-            </div>
-            <span className="text-sm font-medium">{user.username}</span>
-         </button>
-
-         {open && (
-            <div
-               ref={dropdownRef}
-               className="absolute right-0 top-14 w-56 rounded-xl border bg-white shadow-lg overflow-hidden z-50"
+         <DropdownMenu>
+            <DropdownMenuTrigger
+               asChild
+               className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-gray-700"
             >
-               <div className="px-4 py-3 text-sm text-gray-600">
-                  Xin chào:
-                  <span className="font-medium text-gray-900 ml-1.5">{user.username}</span>
-               </div>
-
-               <div className="border-t" />
-
-               <ul className="py-2 text-sm">
-                  <li>
-                     <Link href="/account" className="block px-4 py-2 hover:bg-gray-100">
+               <button className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-zinc-100 active:bg-zinc-200 outline-none group">
+                  <div className="h-8 w-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold transition-transform group-hover:scale-105">
+                     {user.username.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-zinc-700 group-hover:text-zinc-900">
+                     {user.username}
+                  </span>
+               </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="start">
+               <DropdownMenuLabel>
+                  <div className="py-2 text-sm text-gray-600">
+                     Xin chào:
+                     <span className="font-medium text-gray-900 ml-1.5">{user.username}</span>
+                  </div>
+               </DropdownMenuLabel>
+               <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                     <Link href="/account" className="py-1">
                         Thông tin tài khoản
                      </Link>
-                  </li>
-                  <li>
-                     <Link href="/wallet" className="block px-4 py-2 hover:bg-gray-100">
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                     <Link href="/wallet" className="py-1">
                         Nạp tiền
                      </Link>
-                  </li>
-                  <li>
-                     <Link href="/transactions" className="block px-4 py-2 hover:bg-gray-100">
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                     <Link href="/transactions" className="py-1">
                         Lịch sử giao dịch
                      </Link>
-                  </li>
-                  <li>
-                     <Link href="/orders" className="block px-4 py-2 hover:bg-gray-100">
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                     <Link href="/orders" className="py-1">
                         Đơn hàng
                      </Link>
-                  </li>
-               </ul>
+                  </DropdownMenuItem>
+               </DropdownMenuGroup>
+               <DropdownMenuSeparator />
 
-               <div className="border-t" />
+               {renderManagerPanel()}
 
-               <button
-                  onClick={handleLogout}
-                  className="w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50"
+               <DropdownMenuItem>
+                  <Link href="#" className="py-1">
+                     GitHub
+                  </Link>
+               </DropdownMenuItem>
+               <DropdownMenuItem>
+                  <Link href="#" className="py-1">
+                     Support
+                  </Link>
+               </DropdownMenuItem>
+               {/* <DropdownMenuItem disabled>API</DropdownMenuItem> */}
+               <DropdownMenuSeparator />
+               <DropdownMenuItem
+                  variant="destructive"
+                  onSelect={handleLogout}
+                  className="cursor-pointer"
                >
-                  Đăng xuất
-               </button>
-            </div>
-         )}
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Đăng xuất</span>
+               </DropdownMenuItem>
+            </DropdownMenuContent>
+         </DropdownMenu>
       </div>
    );
 }

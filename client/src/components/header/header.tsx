@@ -12,7 +12,7 @@ export default function Header() {
                      <span className="font-medium">NQHxDev</span> — FullStack Developer
                   </div>
                   <div className="flex items-center gap-4">
-                     <div className="flex items-center gap-2">
+                     <div className="flex items-center gp-2">
                         <svg
                            xmlns="http://www.w3.org/2000/svg"
                            className="h-5 w-5 text-gray-300"
@@ -51,7 +51,6 @@ export default function Header() {
                </div>
             </div>
          </div>
-
          {/* Main */}
          <div className="bg-white">
             <div className="mx-auto max-w-7xl px-4 py-4">
@@ -71,15 +70,16 @@ export default function Header() {
                         <span className="relative">Trang chủ</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
                      </Link>
-                     <Link href="#" className="group relative">
+                     <Link href="/products" className="group relative">
                         <span className="relative">Sản phẩm</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
                      </Link>
-                     <Link href="#" className="group relative">
+
+                     <Link href="/introduce" className="group relative">
                         <span className="relative">Giới thiệu</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
                      </Link>
-                     <Link href="#" className="group relative">
+                     <Link href="/contact" className="group relative">
                         <span className="relative">Liên hệ</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
                      </Link>
