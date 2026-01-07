@@ -67,22 +67,22 @@ export default function Header() {
 
                   {/* Nav */}
                   <nav className="hidden md:flex items-center text-gray-800 gap-8 text-sm font-bold">
-                     <a href="#" className="group relative">
+                     <Link href="/" className="group relative">
                         <span className="relative">Trang chủ</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
-                     </a>
-                     <a href="#" className="group relative">
+                     </Link>
+                     <Link href="#" className="group relative">
                         <span className="relative">Sản phẩm</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
-                     </a>
-                     <a href="#" className="group relative">
+                     </Link>
+                     <Link href="#" className="group relative">
                         <span className="relative">Giới thiệu</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
-                     </a>
-                     <a href="#" className="group relative">
+                     </Link>
+                     <Link href="#" className="group relative">
                         <span className="relative">Liên hệ</span>
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black group-hover:w-full transition-all duration-300"></span>
-                     </a>
+                     </Link>
                   </nav>
 
                   <HeaderAuth />

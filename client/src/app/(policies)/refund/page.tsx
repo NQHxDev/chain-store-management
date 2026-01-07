@@ -51,7 +51,7 @@ export default async function RefundPage({
 
    return (
       <>
-         <h1 className="text-3xl font-bold mb-2 text-gray-900">
+         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-black text-center tracking-tight">
             {tab === 'policy' && 'Chính sách hoàn tiền'}
             {tab === 'process' && 'Quy trình hoàn tiền'}
             {tab === 'cases' && 'Ví dụ về hoàn tiền'}

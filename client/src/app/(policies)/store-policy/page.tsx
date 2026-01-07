@@ -14,7 +14,9 @@ import IConMaps from '@/lib/iconMap';
 export default function StorePolicyPage() {
    return (
       <>
-         <h1 className="text-3xl font-bold mb-2">Chính sách cửa hàng</h1>
+         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-black text-center tracking-tight">
+            Chính sách cửa hàng
+         </h1>
          <p className="text-gray-500 mb-8">Quy định và cam kết dịch vụ từ ZeionStore</p>
 
          <section className="space-y-10 text-gray-700">
