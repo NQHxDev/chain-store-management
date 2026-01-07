@@ -12,5 +12,8 @@ export const AuthService = {
 
    logout: () => axiosClient.post('/auth/logout'),
 
-   refresh: () => axiosClient.post('/auth/refresh-token'),
+   refreshToken: () =>
+      axiosClient.post('/auth/api/refresh-token', undefined, {
+         withCredentials: true,
+      }),
 };

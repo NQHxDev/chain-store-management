@@ -1,11 +1,10 @@
-import Footer from '@/components/footer/footer';
 import HeaderGate from '@/components/header/HeaderGate';
 
-export default function Home() {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
    return (
       <>
          <HeaderGate />
-         <Footer />
+         {children}
       </>
    );
 }

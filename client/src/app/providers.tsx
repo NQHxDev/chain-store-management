@@ -1,33 +1,14 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
-import AuthBootstrap from '@/components/auth/AuthBootstrap';
-import Header from '@/components/header/header';
-
-const subscribe = () => () => {};
-const getSnapshot = () => true;
-const getServerSnapshot = () => false;
+import { useEffect } from 'react';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-   const isClient = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-   if (isClient) {
-      document.body.classList.add('loaded');
-   }
+   const hydrate = useAuthStore((s) => s.hydrate);
 
-   if (!isClient) {
-      return (
-         <div className="min-h-screen">
-            <div className="h-20 bg-white border-b"></div>
-            {children}
-         </div>
-      );
-   }
+   useEffect(() => {
+      hydrate();
+   }, [hydrate]);
 
-   return (
-      <>
-         <AuthBootstrap />
-         <Header />
-         {children}
-      </>
-   );
+   return <>{children}</>;
 }

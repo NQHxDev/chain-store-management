@@ -47,9 +47,11 @@ const RoleStories: Role[] = [
  * @param requiredRoleNames Mảng tên các role cho phép: ['admin', 'manager']
  */
 export const hasAnyRole = (
-   userRoles: { role_id: number }[],
+   userRoles: { role_id: number }[] | undefined | null,
    requiredRoleNames: string[]
 ): boolean => {
+   if (!userRoles || !Array.isArray(userRoles)) return false;
+
    const requiredRoleIds = RoleStories.filter((r) => requiredRoleNames.includes(r.role_name)).map(
       (r) => r.role_id
    );

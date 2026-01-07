@@ -1,7 +1,5 @@
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
-import { AuthService } from '@/services/authService';
-import { useRouter } from 'next/navigation';
 
 import {
    DropdownMenu,
@@ -21,17 +19,9 @@ import { hasAnyRole } from '@/lib/auth/Role';
 import { LogOut } from 'lucide-react';
 
 export default function HeaderAuth() {
-   const router = useRouter();
+   const { user, logout } = useAuthStore();
 
-   const { user, hydrated, clearAuth } = useAuthStore();
-
-   const handleLogout = async () => {
-      try {
-         await AuthService.logout();
-      } catch {}
-      clearAuth();
-      router.push('/');
-   };
+   const hydrated = useAuthStore((s) => s.hydrated);
 
    if (!hydrated) {
       return (
@@ -63,6 +53,10 @@ export default function HeaderAuth() {
    }
 
    const renderManagerPanel = () => {
+      console.log('User:', user);
+
+      if (!user || !user.roles) return null;
+
       if (!hasAnyRole(user.roles, ['admin', 'manager'])) return null;
 
       return (
@@ -77,7 +71,9 @@ export default function HeaderAuth() {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                      <DropdownMenuSubContent className="min-w-45">
-                        <DropdownMenuItem className="cursor-pointer">Đơn hàng</DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
+                           <Link href="/dashboard/products">Đơn hàng</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer">Sản phẩm</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="cursor-pointer text-blue-500">
@@ -95,10 +91,7 @@ export default function HeaderAuth() {
 
    return (
       <div className="flex items-center gap-2 relative">
-         <button
-            onClick={() => router.push('/notifications')}
-            className="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-         >
+         <div className="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <svg
                xmlns="http://www.w3.org/2000/svg"
                className="h-6 w-6 text-gray-600"
@@ -114,7 +107,9 @@ export default function HeaderAuth() {
                />
             </svg>
             <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500"></span>
-         </button>
+            <Link href="/notifications"></Link>
+         </div>
+
          <DropdownMenu>
             <DropdownMenuTrigger
                asChild
@@ -174,11 +169,7 @@ export default function HeaderAuth() {
                </DropdownMenuItem>
                {/* <DropdownMenuItem disabled>API</DropdownMenuItem> */}
                <DropdownMenuSeparator />
-               <DropdownMenuItem
-                  variant="destructive"
-                  onSelect={handleLogout}
-                  className="cursor-pointer"
-               >
+               <DropdownMenuItem variant="destructive" onSelect={logout} className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Đăng xuất</span>
                </DropdownMenuItem>

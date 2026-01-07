@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 
 import { toast } from 'sonner';
-import { AuthService } from '@/services/authService';
 import { useAuthStore } from '@/stores/authStore';
 import { AxiosError } from 'axios';
 
@@ -54,40 +53,24 @@ export default function LoginForm() {
       }));
    };
 
+   const login = useAuthStore((s) => s.login);
+
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setLoading(true);
       setError(null);
 
       try {
-         setLoading(true);
-         setError(null);
+         await login(form);
 
-         const res = await AuthService.login(form);
-
-         const { account, tokens } = res.data.data;
-
-         useAuthStore.getState().setAuth(account, tokens.accessToken);
-
-         toast.success('Đăng nhập thành công!', {
-            duration: 1500,
-         });
-
-         setForm((prev) => ({
-            ...prev,
-            password: '',
-         }));
+         toast.success('Đăng nhập thành công!', { duration: 1500 });
 
          router.push('/');
-      } catch (err: unknown) {
-         setForm((prev) => ({
-            ...prev,
-            password: '',
-         }));
-
+      } catch (err) {
          setError(getAuthErrorMessage(err));
       } finally {
          setLoading(false);
+         setForm((p) => ({ ...p, password: '' }));
       }
    };
 

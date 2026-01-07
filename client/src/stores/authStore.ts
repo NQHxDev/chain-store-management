@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { AuthService } from '@/services/authService';
 
 type User = {
    ac_id: string;
@@ -7,36 +8,43 @@ type User = {
    roles: { role_id: number }[];
 };
 
+type LoginPayload = {
+   identifier: string;
+   password: string;
+};
+
 type AuthState = {
    user: User | null;
    accessToken: string | null;
    hydrated: boolean;
+
+   hydrate: () => Promise<void>;
    setAuth: (user: User, token: string) => void;
+   login: (payload: LoginPayload) => Promise<User>;
+   logout: () => Promise<void>;
    clearAuth: () => void;
-   setHydrated: (v: boolean) => void;
 };
 
-const isDev: boolean = process.env.NODE_ENV === 'development';
-
-const initialState = isDev
-   ? {
-        user: {
-           ac_id: '1',
-           username: 'anhjkr',
-           email: 'admin@example.com',
-           roles: [{ role_id: 1 }],
-        },
-        accessToken: 'fake-token-for-testing',
-        hydrated: true,
-     }
-   : {
-        user: null,
-        accessToken: null,
-        hydrated: false,
-     };
-
 export const useAuthStore = create<AuthState>((set) => ({
-   ...initialState,
+   user: null,
+   accessToken: null,
+   hydrated: false,
+
+   hydrate: async () => {
+      try {
+         const res = await AuthService.refreshToken();
+
+         const { account, accessToken } = res.data.data;
+
+         set({
+            user: account,
+            accessToken,
+            hydrated: true,
+         });
+      } catch {
+         set({ hydrated: true });
+      }
+   },
 
    setAuth: (user, token) =>
       set({
@@ -50,5 +58,31 @@ export const useAuthStore = create<AuthState>((set) => ({
          accessToken: null,
       }),
 
-   setHydrated: (v) => set({ hydrated: v }),
+   login: async (payload) => {
+      const res = await AuthService.login(payload);
+      const { account, tokens } = res.data.data;
+
+      if (res.data.status) {
+         set({
+            user: account,
+            accessToken: tokens.accessToken,
+         });
+
+         return account;
+      } else {
+         return null;
+      }
+   },
+
+   logout: async () => {
+      try {
+         await AuthService.logout();
+      } catch (error) {
+         console.error('Logout API Failed:', error);
+      } finally {
+         set({ user: null, accessToken: null });
+
+         window.location.href = '/';
+      }
+   },
 }));
