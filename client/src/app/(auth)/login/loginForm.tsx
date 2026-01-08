@@ -14,6 +14,7 @@ import { AxiosError } from 'axios';
 type LoginPayload = {
    identifier: string;
    password: string;
+   remember: boolean;
 };
 
 type ApiErrorResponse = {
@@ -31,6 +32,7 @@ export default function LoginForm() {
    const [form, setForm] = useState<LoginPayload>({
       identifier: '',
       password: '',
+      remember: false,
    });
 
    const [loading, setLoading] = useState(false);
@@ -75,7 +77,7 @@ export default function LoginForm() {
    };
 
    return (
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit} method="POST">
          {error && (
             <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
                {error}
@@ -107,7 +109,14 @@ export default function LoginForm() {
          </div>
 
          <div className="flex items-center space-x-2 ">
-            <Checkbox id="remember" className="cursor-pointer" />
+            <Checkbox
+               id="remember"
+               checked={form.remember}
+               onCheckedChange={(checked) => {
+                  setForm({ ...form, remember: !!checked });
+               }}
+               className="cursor-pointer"
+            />
             <Label htmlFor="remember" className="text-muted-foreground cursor-pointer">
                Ghi nhớ đăng nhập
             </Label>

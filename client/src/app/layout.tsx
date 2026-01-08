@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { Be_Vietnam_Pro } from 'next/font/google';
 import './globals.css';
 
@@ -17,7 +18,11 @@ export const metadata: Metadata = {
    description: 'Nơi bạn có thể tìm thấy mọi thứ bạn cần!',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+   const headersList = await headers();
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   const nonce = headersList.get('x-nonce');
+
    return (
       <html lang="en" className={beVietnamPro.variable}>
          <body className="antialiased">

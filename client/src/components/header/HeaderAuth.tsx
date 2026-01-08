@@ -71,13 +71,18 @@ export default function HeaderAuth() {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                      <DropdownMenuSubContent className="min-w-45">
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem asChild className="cursor-pointer">
                            <Link href="/dashboard/products">Đơn hàng</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">Sản phẩm</DropdownMenuItem>
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                           <Link href="#">Sản phẩm</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                           <Link href="/dashboard/brands">Các nhãn hàng</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer text-blue-500">
-                           Báo cáo doanh thu
+                        <DropdownMenuItem asChild className="cursor-pointer text-blue-500">
+                           <Link href="#">Báo cáo doanh thu</Link>
                         </DropdownMenuItem>
                      </DropdownMenuSubContent>
                   </DropdownMenuPortal>
@@ -132,22 +137,22 @@ export default function HeaderAuth() {
                   </div>
                </DropdownMenuLabel>
                <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                      <Link href="/account" className="py-1">
                         Thông tin tài khoản
                      </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                      <Link href="/wallet" className="py-1">
                         Nạp tiền
                      </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                      <Link href="/transactions" className="py-1">
                         Lịch sử giao dịch
                      </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                      <Link href="/orders" className="py-1">
                         Đơn hàng
                      </Link>
@@ -157,12 +162,12 @@ export default function HeaderAuth() {
 
                {renderManagerPanel()}
 
-               <DropdownMenuItem>
+               <DropdownMenuItem asChild>
                   <Link href="#" className="py-1">
                      GitHub
                   </Link>
                </DropdownMenuItem>
-               <DropdownMenuItem>
+               <DropdownMenuItem asChild>
                   <Link href="#" className="py-1">
                      Support
                   </Link>
