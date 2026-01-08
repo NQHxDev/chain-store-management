@@ -23,6 +23,7 @@ type AuthState = {
    login: (payload: LoginPayload) => Promise<User>;
    logout: () => Promise<void>;
    clearAuth: () => void;
+   setAccessToken: (token: string) => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -85,4 +86,5 @@ export const useAuthStore = create<AuthState>((set) => ({
          window.location.href = '/';
       }
    },
+   setAccessToken: (token) => set({ accessToken: token }),
 }));

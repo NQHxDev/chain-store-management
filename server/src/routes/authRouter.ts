@@ -17,6 +17,9 @@ authRouter.post(
 authRouter.post('/login', RateLimit.accessRateLimiter, AuthValidator.login(), authController.login);
 authRouter.post('/logout', authController.logout);
 
+authRouter.get('/google', authController.loginByGoogle);
+authRouter.get('/google/callback', authController.loginByGoogleCallback);
+
 // API
 authRouter.get('/check-identifier', authController.checkIdentifier);
 authRouter.post('/refresh-token', authController.refreshToken);

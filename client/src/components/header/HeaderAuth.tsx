@@ -131,11 +131,17 @@ export default function HeaderAuth() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="start">
                <DropdownMenuLabel>
-                  <div className="py-2 text-sm text-gray-600">
-                     Xin chào:
-                     <span className="font-medium text-gray-900 ml-1.5">{user.username}</span>
+                  <div className="text-sm text-gray-600 flex flex-col items-start gap-0.5">
+                     <span>Xin chào:</span>
+                     <span
+                        className="text-gray-900 w-full truncate text-sm leading-tight"
+                        title={user.username}
+                     >
+                        {user.username}
+                     </span>
                   </div>
                </DropdownMenuLabel>
+               <DropdownMenuSeparator />
                <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
                      <Link href="/account" className="py-1">

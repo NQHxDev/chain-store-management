@@ -1,3 +1,10 @@
+import dotenv from 'dotenv';
+
+dotenv.config({
+   quiet: true,
+   override: false,
+});
+
 import type { Request, Response, NextFunction } from 'express';
 
 import type { LoginRequestBody } from '../types/interfaces/interfaceAccount.ts';
@@ -7,6 +14,7 @@ import AuthService from '../services/authService.ts';
 import { AuthError, ValidationError } from '../appError.ts';
 import SecurityService from '../services/securityService.ts';
 import redisService from '../services/redisService.ts';
+import googleClient from '../configs/cfgGoogleClient.ts';
 
 declare global {
    namespace Express {
@@ -50,7 +58,7 @@ class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: result.timeRememberSession,
+            maxAge: result.timeRemember,
             path: '/',
          });
 
@@ -58,7 +66,7 @@ class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: result.timeRememberSession,
+            maxAge: result.timeRemember,
             path: '/',
          });
 
@@ -197,6 +205,82 @@ class AuthController {
          });
       } catch (error) {
          next(error);
+      }
+   };
+
+   loginByGoogle = (req: Request, res: Response, next: NextFunction) => {
+      const url = googleClient.generateAuthUrl({
+         access_type: 'offline',
+         scope: ['profile', 'email'],
+         prompt: 'consent',
+      });
+
+      res.redirect(url);
+   };
+
+   loginByGoogleCallback = async (req: Request, res: Response, next: NextFunction) => {
+      try {
+         const deviceInfo: DeviceInfo = {
+            ipAddress:
+               req.ip || (req.headers['x-forwarded-for'] as string)?.split(',')[0] || 'unknown',
+            userAgent: req.headers['user-agent'] ?? '',
+            sessionId: req.sessionID || '',
+         };
+
+         const { code } = req.query;
+
+         const { tokens } = await googleClient.getToken(code as string);
+         googleClient.setCredentials(tokens);
+
+         const ticket = await googleClient.verifyIdToken({
+            idToken: tokens.id_token!,
+            audience: process.env.GOOGLE_CLIENT_ID,
+         });
+
+         const payload = ticket.getPayload();
+
+         if (!payload) throw new Error('Invalid Google Payload');
+
+         console.log(JSON.stringify(payload));
+
+         const { email, name, picture, sub: googleId, at_hash } = payload;
+
+         if (!payload.email_verified) {
+            throw new AuthError('Email Google chưa được xác thực!');
+         }
+
+         const result = await AuthService.loginByGoogle(
+            {
+               email: email!,
+               name: name!,
+               picture: picture || '',
+               sub: googleId,
+               at_hash: at_hash || '',
+            },
+            deviceInfo
+         );
+
+         const sessionIdToStore = result.tokens.sessionId || deviceInfo.sessionId;
+
+         res.cookie('refreshToken', result.tokens.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: result.timeRemember,
+            path: '/',
+         });
+
+         res.cookie('sessionId', sessionIdToStore, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: result.timeRemember,
+            path: '/',
+         });
+
+         res.redirect(`/oauth/callback?accessToken=${result.tokens.accessToken}`);
+      } catch (err) {
+         next(err);
       }
    };
 }
