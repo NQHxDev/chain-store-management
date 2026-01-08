@@ -1,4 +1,4 @@
-class AppError extends Error {
+export class AppError extends Error {
    public statusCode: number;
    public isOperational: boolean;
 
@@ -11,34 +11,38 @@ class AppError extends Error {
    }
 }
 
-class ValidationError extends AppError {
+export class ValidationError extends AppError {
    constructor(message: string) {
       super(400, message);
    }
 }
 
-class AuthError extends AppError {
+export class OverLimitError extends AppError {
+   constructor(message: string) {
+      super(429, message);
+   }
+}
+
+export class AuthError extends AppError {
    constructor(message: string) {
       super(401, message);
    }
 }
 
-class ForbiddenError extends AppError {
+export class ForbiddenError extends AppError {
    constructor(message: string) {
       super(403, message);
    }
 }
 
-class NotFoundError extends AppError {
+export class NotFoundError extends AppError {
    constructor(message: string) {
       super(404, message);
    }
 }
 
-class DatabaseError extends AppError {
+export class DatabaseError extends AppError {
    constructor(message: string) {
       super(500, message);
    }
 }
-
-export { AppError, ValidationError, AuthError, ForbiddenError, NotFoundError, DatabaseError };

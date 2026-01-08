@@ -1,7 +1,20 @@
-import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config({
+   quiet: true,
+   override: false,
+});
+
 import type { Request, Response, NextFunction } from 'express';
 
+import type { LoginRequestBody } from '../types/interfaces/interfaceAccount.ts';
+import type { DeviceInfo, StoredRefreshToken } from '../types/interfaces/interfaceToken.ts';
+
 import AuthService from '../services/authService.ts';
+import { AuthError, ValidationError } from '../appError.ts';
+import SecurityService from '../services/securityService.ts';
+import redisService from '../services/redisService.ts';
+import googleClient from '../configs/cfgGoogleClient.ts';
 
 declare global {
    namespace Express {
@@ -10,12 +23,6 @@ declare global {
       }
    }
 }
-
-import { AuthError, ValidationError } from '../appError.ts';
-import type { DeviceInfo, StoredRefreshToken } from '../types/interfaces/interfaceToken.ts';
-import SecurityService from '../services/securityService.ts';
-import redisService from '../services/redisService.ts';
-
 class AuthController {
    register = async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -24,6 +31,7 @@ class AuthController {
          const result = await AuthService.register(data);
 
          res.status(201).send({
+            status: 'success',
             message: 'Tạo tài khoản thành công!',
             data: {
                detail: result.data,
@@ -34,10 +42,11 @@ class AuthController {
       }
    };
 
-   login = async (req: Request, res: Response, next: NextFunction) => {
+   login = async (req: Request<{}, {}, LoginRequestBody>, res: Response, next: NextFunction) => {
       try {
          const deviceInfo: DeviceInfo = {
-            ipAddress: req.ip ?? '',
+            ipAddress:
+               req.ip || (req.headers['x-forwarded-for'] as string)?.split(',')[0] || 'unknown',
             userAgent: req.headers['user-agent'] ?? '',
             sessionId: req.sessionID || '',
          };
@@ -49,7 +58,7 @@ class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: result.timeRemember,
             path: '/',
          });
 
@@ -57,18 +66,12 @@ class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: result.timeRemember,
             path: '/',
          });
 
-         res.cookie('isLogged', 'yes', {
-            httpOnly: false,
-            secure: true,
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-         });
-
          res.status(200).send({
+            status: 'success',
             message: 'Đăng nhập thành công!',
             data: {
                account: result.account,
@@ -115,11 +118,8 @@ class AuthController {
             path: '/',
          });
 
-         res.clearCookie('isLogged', {
-            path: '/',
-         });
-
          res.status(200).send({
+            status: 'success',
             message: 'Đăng xuất thành công',
          });
       } catch (error) {
@@ -130,6 +130,10 @@ class AuthController {
    refreshToken = async (req: Request, res: Response, next: NextFunction) => {
       try {
          const refreshToken = req.cookies.refreshToken;
+
+         if (!refreshToken) {
+            return res.sendStatus(204);
+         }
 
          const sessionId = req.cookies.sessionId;
 
@@ -149,6 +153,10 @@ class AuthController {
 
          const result = await AuthService.refreshToken(refreshToken, deviceInfo);
 
+         if (!result) {
+            return res.sendStatus(204);
+         }
+
          res.cookie('refreshToken', result.tokens.refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -166,6 +174,7 @@ class AuthController {
          });
 
          res.status(201).send({
+            status: 'success',
             message: 'Refresh token thành công',
             data: {
                accessToken: result.tokens.accessToken,
@@ -173,7 +182,7 @@ class AuthController {
                   id: result.user.id,
                   username: result.user.username,
                   email: result.user.email,
-                  role: result.user.role,
+                  roles: result.user.role,
                },
             },
          });
@@ -196,6 +205,82 @@ class AuthController {
          });
       } catch (error) {
          next(error);
+      }
+   };
+
+   loginByGoogle = (req: Request, res: Response, next: NextFunction) => {
+      const url = googleClient.generateAuthUrl({
+         access_type: 'offline',
+         scope: ['profile', 'email'],
+         prompt: 'consent',
+      });
+
+      res.redirect(url);
+   };
+
+   loginByGoogleCallback = async (req: Request, res: Response, next: NextFunction) => {
+      try {
+         const deviceInfo: DeviceInfo = {
+            ipAddress:
+               req.ip || (req.headers['x-forwarded-for'] as string)?.split(',')[0] || 'unknown',
+            userAgent: req.headers['user-agent'] ?? '',
+            sessionId: req.sessionID || '',
+         };
+
+         const { code } = req.query;
+
+         const { tokens } = await googleClient.getToken(code as string);
+         googleClient.setCredentials(tokens);
+
+         const ticket = await googleClient.verifyIdToken({
+            idToken: tokens.id_token!,
+            audience: process.env.GOOGLE_CLIENT_ID,
+         });
+
+         const payload = ticket.getPayload();
+
+         if (!payload) throw new Error('Invalid Google Payload');
+
+         console.log(JSON.stringify(payload));
+
+         const { email, name, picture, sub: googleId, at_hash } = payload;
+
+         if (!payload.email_verified) {
+            throw new AuthError('Email Google chưa được xác thực!');
+         }
+
+         const result = await AuthService.loginByGoogle(
+            {
+               email: email!,
+               name: name!,
+               picture: picture || '',
+               sub: googleId,
+               at_hash: at_hash || '',
+            },
+            deviceInfo
+         );
+
+         const sessionIdToStore = result.tokens.sessionId || deviceInfo.sessionId;
+
+         res.cookie('refreshToken', result.tokens.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: result.timeRemember,
+            path: '/',
+         });
+
+         res.cookie('sessionId', sessionIdToStore, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: result.timeRemember,
+            path: '/',
+         });
+
+         res.redirect(`/oauth/callback?accessToken=${result.tokens.accessToken}`);
+      } catch (err) {
+         next(err);
       }
    };
 }

@@ -65,12 +65,12 @@ export default function RegisterForm(): JSX.Element {
 
    const { available: emailAvailable, checking: emailChecking } = useDebouncedCheck(
       email,
-      '/auth/api/check-identifier'
+      '/auth/check-identifier'
    );
 
    const { available: usernameAvailable, checking: usernameChecking } = useDebouncedCheck(
       username,
-      '/auth/api/check-identifier'
+      '/auth/check-identifier'
    );
 
    const emailError = emailTouched ? validateEmail(email) : null;

@@ -5,16 +5,17 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import cors from 'cors';
 import next from 'next';
+import crypto from 'crypto';
 
 import mainRouter from './routes/mainRouter.ts';
 import { errorHandler } from './middlewares/errorHandler.ts';
 
 export async function createApp() {
-   const dev = process.env.NODE_ENV !== 'production';
+   const isDev = process.env.NODE_ENV !== 'production';
    const server = express();
 
    const appNext = next({
-      dev,
+      dev: isDev,
       dir: '../client',
    });
 
@@ -22,11 +23,11 @@ export async function createApp() {
 
    const handle = appNext.getRequestHandler();
 
-   server.use(
-      helmet({
-         contentSecurityPolicy: dev ? false : undefined,
-      })
-   );
+   server.use((req, res, next) => {
+      res.locals.nonce = crypto.randomBytes(16).toString('base64');
+      res.setHeader('x-nonce', res.locals.nonce);
+      next();
+   });
 
    server.use(compression());
    server.use(cookieParser());
@@ -35,18 +36,20 @@ export async function createApp() {
 
    server.use(
       session({
-         secret: process.env.SESSION_SECRET || 'default-secret-key',
+         secret:
+            process.env.SESSION_SECRET ||
+            '33c6281b4cc5d8399194b47802c5b373297901c768bd12977c471780abc85ab0',
          resave: false,
          saveUninitialized: false,
          cookie: {
-            secure: !dev,
-            sameSite: dev ? 'lax' : 'strict',
+            secure: !isDev,
+            sameSite: isDev ? 'lax' : 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000,
          },
       })
    );
 
-   if (dev) {
+   if (isDev) {
       server.use(
          cors({
             origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
@@ -55,11 +58,29 @@ export async function createApp() {
       );
    }
 
-   server.use('/zeion', mainRouter);
+   server.use('/api', mainRouter);
 
    server.all(/.*/, (req, res) => {
       return handle(req, res);
    });
+   server.all('/_next/{*splat}', (req, res) => {
+      return handle(req, res);
+   });
+
+   server.use(
+      helmet({
+         contentSecurityPolicy: {
+            useDefaults: true,
+            directives: {
+               scriptSrc: ["'self'", (req, res: any) => `'nonce-${res.locals.nonce}'`],
+               styleSrc: ["'self'", "'unsafe-inline'"],
+               imgSrc: ["'self'", 'data:', 'blob:'],
+               fontSrc: ["'self'", 'data:'],
+               connectSrc: ["'self'"],
+            },
+         },
+      })
+   );
 
    server.use(errorHandler);
 

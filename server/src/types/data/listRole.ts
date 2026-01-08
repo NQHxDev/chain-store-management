@@ -1,4 +1,4 @@
-import type { IRole } from '../interfaces/interfaceAccount';
+import type { IRole } from '../interfaces/interfaceAccount.ts';
 
 const ListRole: IRole[] = [
    { role_id: 1, role_name: 'admin', role_desc: '' },

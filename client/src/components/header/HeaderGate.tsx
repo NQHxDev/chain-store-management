@@ -1,8 +1,8 @@
 'use client';
 
-import Header from './header';
 import { useAuthStore } from '@/stores/authStore';
-import HeaderSkeleton from '@/components/header/headerSkeleton';
+import Header from './header';
+import HeaderSkeleton from '@/components/header/HeaderSkeleton';
 
 export default function HeaderGate() {
    const hydrated = useAuthStore((s) => s.hydrated);

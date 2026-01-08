@@ -50,12 +50,12 @@ export const initDatabase = async (): Promise<Pool> => {
          connectDB.status = DB_STATUS.ERROR;
 
          if (attempt >= MAX_RETRY) {
-            console.error('[DB] MySQL Connection Failed After Retries...');
+            console.error('[Error] MySQL Connection Failed After Retries...');
             throw error;
          }
 
-         console.log(`[/] Retry in ${RETRY_DELAY / 1000}s...`);
-         throw error;
+         console.log(`[/] Retrying in ${RETRY_DELAY / 1000}s...`);
+         await sleep(RETRY_DELAY);
       }
    }
 

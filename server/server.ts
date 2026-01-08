@@ -24,10 +24,10 @@ async function startServer() {
 
       server.listen(PORT, HOST, () => {
          console.log(`\n[>] Server running at http://${HOST}:${PORT}`);
-         console.log(`[>] API: http://${HOST}:${PORT}/zeion\n`);
+         console.log(`[>] API: http://${HOST}:${PORT}/api\n`);
       });
    } catch (err) {
-      console.error('[X] Start server failed:', err);
+      console.error('[Error] Start server failed:', err);
       process.exit(1);
    }
 }
