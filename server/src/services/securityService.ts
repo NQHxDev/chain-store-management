@@ -159,7 +159,10 @@ class SecurityService {
    /**
     * Làm mới Access Token bằng Refresh Token
     */
-   static async refreshToken(refreshToken: string, deviceInfo: DeviceInfo): Promise<RefreshResult> {
+   static async refreshToken(
+      refreshToken: string,
+      deviceInfo: DeviceInfo
+   ): Promise<RefreshResult | null> {
       const { sessionId } = deviceInfo;
 
       if (!sessionId) {
@@ -171,13 +174,18 @@ class SecurityService {
       const stored = await redisService.get<StoredRefreshToken>(sessionKey);
 
       if (!stored) {
-         throw new AppError(401, 'Refresh token không tồn tại hoặc đã hết hạn');
-      } else if (stored.tokenHash !== tokenHash) {
+         return null;
+      }
+      if (stored.tokenHash !== tokenHash) {
          await this.revokeAllUserSessions(stored.userId);
-         throw new AppError(401, 'Refresh token không hợp lệ');
+         return null;
       }
 
       const user = await this.getUserInfo(stored.userId);
+      if (!user) {
+         return null;
+      }
+
       const payload: TokenPayload = {
          userId: user.id,
          username: user.username,

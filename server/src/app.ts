@@ -55,9 +55,12 @@ export async function createApp() {
       );
    }
 
-   server.use('/zeion', mainRouter);
+   server.use('/api', mainRouter);
 
    server.all(/.*/, (req, res) => {
+      return handle(req, res);
+   });
+   server.all('/_next/{*splat}', (req, res) => {
       return handle(req, res);
    });
 

@@ -18,3 +18,9 @@ export interface IAccountRequest {
    password: string;
    confirmPassword: string;
 }
+
+export interface LoginRequestBody {
+   identifier: string;
+   password: string;
+   remember: boolean;
+}

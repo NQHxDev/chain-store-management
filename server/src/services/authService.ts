@@ -1,13 +1,11 @@
 import bcrypt from 'bcrypt';
 import { uuidv7 } from 'uuidv7';
-import crypto from 'crypto';
 
 import type { IAccountRequest, IAccount } from '../types/interfaces/interfaceAccount.ts';
 import { ValidationError, AuthError, ForbiddenError } from '../appError.ts';
 import RepoAccount from '../repositories/repoAccount.ts';
 import SecurityService from './securityService.ts';
-import type { DeviceInfo, StoredRefreshToken } from '../types/interfaces/interfaceToken.ts';
-import redisService from './redisService.ts';
+import type { DeviceInfo } from '../types/interfaces/interfaceToken.ts';
 
 const repoAccount = new RepoAccount();
 
@@ -48,6 +46,7 @@ class AuthService {
       data: {
          identifier: string;
          password: string;
+         remember: boolean;
       },
       deviceInfo: DeviceInfo
    ) => {
@@ -84,6 +83,9 @@ class AuthService {
          }
       );
 
+      const timeOneDay = 24 * 60 * 60 * 1000;
+      const timeRememberSession = data.remember ? 7 * timeOneDay : timeOneDay;
+
       return {
          account: {
             ac_id: account.ac_id,
@@ -92,6 +94,7 @@ class AuthService {
             roles: role_account,
          },
          tokens: tokenPair,
+         timeRememberSession,
       };
    };
 

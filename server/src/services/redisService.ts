@@ -3,6 +3,9 @@ import type { Redis as RedisType } from 'ioredis';
 
 import { REDIS_STATUS, getOptionConnectRedis } from '../configs/cfgRedis.ts';
 
+const MAX_RETRY = 10;
+const RETRY_DELAY = 3_000;
+
 type RedisConnect = {
    status: (typeof REDIS_STATUS)[keyof typeof REDIS_STATUS];
    instance: RedisType | Cluster | null;
@@ -17,50 +20,74 @@ let redisConnect: RedisConnect = {
    lastPing: null,
 };
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const initRedis = async (options?: RedisOptions): Promise<RedisType | Cluster> => {
-   try {
-      if (redisConnect.instance && redisConnect.status === REDIS_STATUS.CONNECTED) {
-         await pingRedis(redisConnect.instance);
-         return redisConnect.instance;
+   let attempt = 0;
+
+   while (attempt < MAX_RETRY) {
+      try {
+         console.log(
+            attempt === 0
+               ? '[-] Connecting to Redis...'
+               : `[-] Reconnecting to Redis Attempt: ${attempt}`
+         );
+
+         if (redisConnect.instance && redisConnect.status === REDIS_STATUS.CONNECTED) {
+            await pingRedis(redisConnect.instance);
+            return redisConnect.instance;
+         }
+
+         const redisOptions: RedisOptions = {
+            ...getOptionConnectRedis(),
+            ...options,
+            retryStrategy: (retryAttempt: number) => {
+               console.log(`[Redis Client] Reconnecting attempt: ${retryAttempt}`);
+               return Math.min(retryAttempt * 1000, 10000);
+            },
+            maxRetriesPerRequest: 3,
+            enableReadyCheck: true,
+            enableOfflineQueue: true,
+            lazyConnect: false,
+         };
+
+         const instance = new Redis(redisOptions);
+         setupRedisEvents(instance);
+
+         await Promise.race([
+            instance.ping(),
+            new Promise((_, reject) =>
+               setTimeout(() => reject(new Error('Redis ping timeout')), 5000)
+            ),
+         ]);
+
+         redisConnect = {
+            status: REDIS_STATUS.CONNECTED,
+            instance,
+            lastError: null,
+            lastPing: new Date(),
+         };
+
+         console.log('[✓] Redis connected successfully');
+         return instance;
+      } catch (error) {
+         console.error('Init Redis Error:', error);
+         redisConnect.status = REDIS_STATUS.ERROR;
+         redisConnect.lastError = error as Error;
+
+         attempt++;
+
+         if (attempt >= MAX_RETRY) {
+            console.error(`[Error] Redis Connection Failed After Retries...`);
+            throw error;
+         }
+
+         console.log(`[/] Retrying in ${RETRY_DELAY / 1000}s...`);
+         await sleep(RETRY_DELAY);
       }
-
-      const redisOptions: RedisOptions = {
-         ...getOptionConnectRedis(),
-         ...options,
-         retryStrategy: (times: number) => {
-            const delay = Math.min(times * 100, 3000);
-            console.log(`Redis reconnecting attempt ${times}, delay ${delay}ms`);
-            return delay;
-         },
-         maxRetriesPerRequest: 3,
-         enableReadyCheck: true,
-         enableOfflineQueue: true,
-         lazyConnect: false,
-      };
-
-      const instance = new Redis(redisOptions);
-
-      // Setup event handlers
-      setupRedisEvents(instance);
-
-      // Test connection
-      await instance.ping();
-
-      redisConnect = {
-         status: REDIS_STATUS.CONNECTED,
-         instance,
-         lastError: null,
-         lastPing: new Date(),
-      };
-
-      console.log('[-] Connecting to Redis...');
-      return instance;
-   } catch (error) {
-      console.error('❌ Init Redis Error:', error);
-      redisConnect.status = REDIS_STATUS.ERROR;
-      redisConnect.lastError = error as Error;
-      throw error;
    }
+
+   throw new Error('Unreachable state in Redis initialization');
 };
 
 /**
