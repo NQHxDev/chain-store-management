@@ -24,4 +24,11 @@ authRouter.get('/google/callback', authController.loginByGoogleCallback);
 authRouter.get('/check-identifier', authController.checkIdentifier);
 authRouter.post('/refresh-token', authController.refreshToken);
 
+// authRouter.post('/update-phone-number');
+
+// Change FullName User
+// Update Location
+// Show UserID
+// Update Password
+
 export default authRouter;

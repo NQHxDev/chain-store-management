@@ -9,6 +9,7 @@ export interface IAccount {
    username: string;
    password_hash?: string | null;
    email: string;
+   phone?: string | number;
    status?: string;
 }
 

@@ -1,6 +1,8 @@
 import { body, param, query, validationResult } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 
+import { ValidationError } from '../../appError.ts';
+
 class AuthValidator {
    static login() {
       return [
@@ -9,9 +11,18 @@ class AuthValidator {
             .notEmpty()
             .withMessage('Vui lòng nhập email hoặc tên đăng nhập')
             .escape()
-            .withMessage('Tài khoản hoặc Email không hợp lệ')
-            .isLength({ min: 6, max: 30 })
-            .withMessage('Tài khoản phải từ 6 đến 30 ký tự'),
+            .custom((value) => {
+               if (value.includes('@')) {
+                  if (value.length > 255) {
+                     throw new ValidationError('Email không được vượt quá 255 ký tự');
+                  }
+                  return true;
+               }
+               if (value.length < 6 || value.length > 30) {
+                  throw new ValidationError('Tên đăng nhập phải từ 6 đến 30 ký tự');
+               }
+               return true;
+            }),
 
          body('password')
             .trim()
@@ -204,22 +215,23 @@ class AuthValidator {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-         const clientErrors = errors.array().flatMap((err) => {
-            if (err.type === 'field') {
-               return [
-                  {
-                     field: err.path,
-                     message: err.msg,
-                  },
-               ];
-            }
-            return [];
-         });
+         const fieldErrors = errors
+            .array()
+            .filter(
+               (e): e is import('express-validator').FieldValidationError => e.type === 'field'
+            );
 
          return res.status(400).json({
             success: false,
-            message: 'Dữ liệu không hợp lệ',
-            errors: clientErrors.length ? clientErrors : undefined,
+            error: {
+               code: 400,
+               type: 'Validation Error',
+               message: fieldErrors[0]?.msg || 'Dữ liệu không hợp lệ',
+               details: fieldErrors.map((e) => ({
+                  field: e.path,
+                  message: e.msg,
+               })),
+            },
          });
       }
 

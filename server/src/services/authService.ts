@@ -222,4 +222,6 @@ class AuthService {
    };
 }
 
+class AccountProfileService {}
+
 export default AuthService;

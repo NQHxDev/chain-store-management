@@ -285,4 +285,19 @@ class AuthController {
    };
 }
 
+class AccountProfileController {
+   updatePhoneNumber = async (req: Request, res: Response, next: NextFunction) => {
+      try {
+         /*
+            data: {
+               ac_id:
+               newPhone:
+            }
+         */
+      } catch (error) {
+         next(error);
+      }
+   };
+}
+
 export default AuthController;

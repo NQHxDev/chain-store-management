@@ -264,6 +264,7 @@ export default function RegisterForm(): JSX.Element {
                   Đồng ý với{' '}
                   <Link
                      href="/terms"
+                     target="_blank"
                      className="font-medium text-foreground underline underline-offset-4"
                   >
                      Điều khoản
@@ -271,6 +272,7 @@ export default function RegisterForm(): JSX.Element {
                   và{' '}
                   <Link
                      href="/privacy"
+                     target="_blank"
                      className="font-medium text-foreground underline underline-offset-4"
                   >
                      Chính sách bảo mật

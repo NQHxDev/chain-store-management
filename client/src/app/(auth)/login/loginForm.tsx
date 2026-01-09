@@ -39,8 +39,13 @@ export default function LoginForm() {
    const [error, setError] = useState<string | null>(null);
 
    const getAuthErrorMessage = (err: unknown): string => {
+      console.error('Debug Login Error:', err);
+
       if (err instanceof Error) {
          const axiosError = err as AxiosError<ApiErrorResponse>;
+
+         console.log('Error Status:', axiosError.response?.status);
+         console.log('Error Data:', axiosError.response?.data);
 
          return axiosError.response?.data?.error?.message || 'Đăng nhập thất bại';
       }
