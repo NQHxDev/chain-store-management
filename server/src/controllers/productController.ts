@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 
-import type { CooperateRequestBody } from '../types/interfaces/interfaceProduct.ts';
-import ProductServices, { BrandServices } from '../services/productServices.ts';
+import type { CooperateRequestBody } from '@/types/interfaces/interfaceProduct';
+import ProductServices, { BrandServices } from '@/services/productServices';
 
 class ProductController {
    createProduct = async (req: Request, res: Response, next: NextFunction) => {};

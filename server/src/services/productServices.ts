@@ -1,7 +1,7 @@
 import { uuidv7 } from 'uuidv7';
 
-import { BrandRepository } from '../repositories/repoProduct.ts';
-import type { CooperateRequestBody, IBrand } from '../types/interfaces/interfaceProduct.ts';
+import { BrandRepository } from '@/repositories/repoProduct';
+import type { CooperateRequestBody, IBrand } from '@/types/interfaces/interfaceProduct';
 
 class ProductServices {}
 

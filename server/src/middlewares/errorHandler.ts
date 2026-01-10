@@ -6,7 +6,7 @@ dotenv.config({
    override: false,
 });
 
-import { AppError } from '../appError.ts';
+import { AppError } from '@/appError';
 
 export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
    console.error('[*] Error:', {

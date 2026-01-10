@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 
-import { OverLimitError } from '../appError.ts';
+import { OverLimitError } from '@/appError';
 
 class RateLimit {
    static accessRateLimiter = rateLimit({

@@ -1,6 +1,6 @@
-import { DatabaseError } from '../appError.ts';
-import { executeQuery, transactionQuery } from '../services/databaseService.ts';
-import type { IBrand } from '../types/interfaces/interfaceProduct.ts';
+import { DatabaseError } from '@/appError';
+import { executeQuery, transactionQuery } from '@/services/databaseService';
+import type { IBrand } from '@/types/interfaces/interfaceProduct';
 
 class ProductRepository {}
 

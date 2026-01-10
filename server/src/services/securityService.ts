@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { uuidv7 } from 'uuidv7';
 import crypto from 'crypto';
-import redisService from './redisService.ts';
+
+import redisService from './redisService';
 import type {
    TokenPayload,
    TokenPair,
@@ -10,8 +11,8 @@ import type {
    TokenValidationResult,
    RefreshResult,
 } from '../types/interfaces/interfaceToken.ts';
-import { AppError, ValidationError } from '../appError.ts';
-import AccountRepository from '../repositories/repoAccount.ts';
+import { AppError, ValidationError } from '@/appError';
+import AccountRepository from '@/repositories/repoAccount';
 
 class SecurityService {
    private static readonly ACCESS_TOKEN_SECRET =

@@ -1,7 +1,7 @@
 import { body, param, query, validationResult } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 
-import { ValidationError } from '../../appError.ts';
+import { ValidationError } from '@/appError';
 
 class AuthValidator {
    static login() {

@@ -1,8 +1,8 @@
-import { DatabaseError } from '../appError.ts';
-import { executeQuery, transactionQuery } from '../services/databaseService.ts';
-import ListRole from '../types/data/listRole.ts';
+import { DatabaseError } from '@/appError';
+import { executeQuery, transactionQuery } from '@/services/databaseService';
+import ListRole from '@/types/data/listRole';
 
-import type { IAccount, IOauth, IProfile } from '../types/interfaces/interfaceAccount.ts';
+import type { IAccount, IOauth, IProfile } from '@/types/interfaces/interfaceAccount';
 
 class AccountRepository {
    createAccount = async (newAccount: IAccount): Promise<any> => {

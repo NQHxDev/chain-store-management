@@ -1,8 +1,8 @@
 import express from 'express';
 
-import RateLimit from '../middlewares/rateLimit.ts';
-import AuthController from '../controllers/authController.ts';
-import AuthValidator from '../middlewares/validations/authValidator.ts';
+import RateLimit from '@/middlewares/rateLimit';
+import AuthController from '@/controllers/authController';
+import AuthValidator from '@/middlewares/validations/authValidator';
 
 const authRouter = express.Router();
 const authController = new AuthController();

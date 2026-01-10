@@ -7,14 +7,14 @@ dotenv.config({
 
 import type { Request, Response, NextFunction } from 'express';
 
-import type { LoginRequestBody } from '../types/interfaces/interfaceAccount.ts';
-import type { DeviceInfo, StoredRefreshToken } from '../types/interfaces/interfaceToken.ts';
+import type { LoginRequestBody } from '@/types/interfaces/interfaceAccount';
+import type { DeviceInfo, StoredRefreshToken } from '@/types/interfaces/interfaceToken';
 
-import AuthService from '../services/authService.ts';
-import { AuthError, ValidationError } from '../appError.ts';
-import SecurityService from '../services/securityService.ts';
-import redisService from '../services/redisService.ts';
-import googleClient from '../configs/cfgGoogleClient.ts';
+import AuthService from '@/services/authService';
+import { AuthError, ValidationError } from '@/appError';
+import SecurityService from '@/services/securityService';
+import redisService from '@/services/redisService';
+import googleClient from '@/configs/cfgGoogleClient';
 
 declare global {
    namespace Express {

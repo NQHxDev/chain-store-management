@@ -7,8 +7,8 @@ import cors from 'cors';
 import next from 'next';
 import crypto from 'crypto';
 
-import mainRouter from './routes/mainRouter.ts';
-import { errorHandler } from './middlewares/errorHandler.ts';
+import mainRouter from '@/routes/mainRouter';
+import { errorHandler } from '@/middlewares/errorHandler';
 
 export async function createApp() {
    const isDev = process.env.NODE_ENV !== 'production';

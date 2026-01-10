@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import type { Pool, PoolConnection } from 'mysql2/promise';
 
-import { DB_STATUS, getOptionConnect } from '../configs/cfgDatabase.ts';
+import { DB_STATUS, getOptionConnect } from '@/configs/cfgDatabase';
 
 const MAX_RETRY = 10;
 const RETRY_DELAY = 3_000;

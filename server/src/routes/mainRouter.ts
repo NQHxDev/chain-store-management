@@ -3,8 +3,8 @@ import type { Request, Response } from 'express';
 
 const mainRouter = express.Router();
 
-import authRouter from './authRouter.ts';
-import productRouter from './productRouter.ts';
+import authRouter from './authRouter';
+import productRouter from './productRouter';
 
 mainRouter.use('/auth', authRouter);
 mainRouter.use('/prod', productRouter);

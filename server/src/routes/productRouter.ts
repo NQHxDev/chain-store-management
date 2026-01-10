@@ -2,7 +2,7 @@ import express from 'express';
 
 const productRouter = express.Router();
 
-import { BrandController } from '../controllers/productController.ts';
+import { BrandController } from '@/controllers/productController';
 
 const brandController = new BrandController();
 

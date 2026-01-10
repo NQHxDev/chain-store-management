@@ -1,4 +1,7 @@
-import type { IRole } from '../interfaces/interfaceAccount.ts';
+import { IRole } from '@/types/interfaces/interfaceAccount';
+import { executeQuery } from '@/services/databaseService';
+
+export const GetListRole = async () => {};
 
 const ListRole: IRole[] = [
    { role_id: 1, role_name: 'admin', role_desc: '' },

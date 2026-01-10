@@ -6,11 +6,12 @@ import type {
    IAccount,
    IProfile,
    IOauth,
-} from '../types/interfaces/interfaceAccount.ts';
-import { ValidationError, AuthError, ForbiddenError } from '../appError.ts';
-import RepoAccount, { OauthRepository, ProfileRepository } from '../repositories/repoAccount.ts';
-import SecurityService from './securityService.ts';
-import type { DeviceInfo } from '../types/interfaces/interfaceToken.ts';
+} from '@/types/interfaces/interfaceAccount';
+
+import { ValidationError, AuthError, ForbiddenError } from '@/appError';
+import RepoAccount, { OauthRepository, ProfileRepository } from '@/repositories/repoAccount';
+import type { DeviceInfo } from '@/types/interfaces/interfaceToken';
+import SecurityService from '@/services/securityService';
 
 const repoAccount = new RepoAccount();
 const repoProfile = new ProfileRepository();

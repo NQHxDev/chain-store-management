@@ -1,7 +1,7 @@
 import Redis, { type RedisOptions, type Cluster } from 'ioredis';
 import type { Redis as RedisType } from 'ioredis';
 
-import { REDIS_STATUS, getOptionConnectRedis } from '../configs/cfgRedis.ts';
+import { REDIS_STATUS, getOptionConnectRedis } from '@/configs/cfgRedis';
 
 const MAX_RETRY = 10;
 const RETRY_DELAY = 3_000;
@@ -68,7 +68,6 @@ export const initRedis = async (options?: RedisOptions): Promise<RedisType | Clu
             lastPing: new Date(),
          };
 
-         console.log('[✓] Redis connected successfully');
          return instance;
       } catch (error) {
          console.error('Init Redis Error:', error);
