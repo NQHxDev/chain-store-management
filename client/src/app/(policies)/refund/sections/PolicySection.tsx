@@ -21,7 +21,7 @@ export default function RefundPolicySection() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-900">✅ Điều kiện được hoàn tiền</h4>
+                  <h4 className="font-semibold text-gray-900">Điều kiện được hoàn tiền</h4>
                   <ul className="space-y-3">
                      <li className="flex items-start gap-2">
                         <div className="h-1.5 w-1.5 rounded-full bg-green-500 mt-1.5"></div>
@@ -43,7 +43,7 @@ export default function RefundPolicySection() {
                </div>
 
                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-900">❌ Điều kiện không được hoàn tiền</h4>
+                  <h4 className="font-semibold text-gray-900">Điều kiện không được hoàn tiền</h4>
                   <ul className="space-y-3">
                      <li className="flex items-start gap-2">
                         <div className="h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5"></div>

@@ -12,7 +12,7 @@ export interface TokenPayload {
    userId: string | number;
    username: string;
    email: string;
-   role: string;
+   roles: Array<string | number>;
    sessionId?: string;
 }
 
@@ -43,4 +43,10 @@ export interface TokenValidationResult {
    isValid: boolean;
    payload?: TokenPayload;
    error?: string;
+}
+
+export interface SetAuthCookieParams {
+   refreshToken: string;
+   sessionId: string | number;
+   timeRemember: number;
 }

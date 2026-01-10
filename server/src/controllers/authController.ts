@@ -10,11 +10,13 @@ import type { Request, Response, NextFunction } from 'express';
 import type { LoginRequestBody } from '@/types/interfaces/interfaceAccount';
 import type { DeviceInfo, StoredRefreshToken } from '@/types/interfaces/interfaceToken';
 
-import AuthService from '@/services/authService';
+import AuthService from '@/services/auth/authService';
 import { AuthError, ValidationError } from '@/appError';
-import SecurityService from '@/services/securityService';
+import SecurityService from '@/services/auth/securityService';
 import redisService from '@/services/redisService';
 import googleClient from '@/configs/cfgGoogleClient';
+import { uuidv7 } from 'uuidv7';
+import { CookieUtil } from '@/utils/cookieUtil';
 
 declare global {
    namespace Express {
@@ -26,16 +28,26 @@ declare global {
 class AuthController {
    register = async (req: Request, res: Response, next: NextFunction) => {
       try {
-         const data = req.body;
+         const deviceInfo: DeviceInfo = {
+            ipAddress: req.ip ?? 'unknown',
+            userAgent: req.headers['user-agent'] ?? '',
+            sessionId: req.sessionID ?? uuidv7(),
+         };
 
-         const result = await AuthService.register(data);
+         const result = await AuthService.register(req.body, deviceInfo);
 
-         res.status(201).send({
+         if (result.tokens) {
+            CookieUtil.setAuthCookies(res, {
+               refreshToken: result.tokens.refreshToken,
+               sessionId: deviceInfo.sessionId!,
+               timeRemember: result.timeRemember,
+            });
+         }
+
+         res.status(201).json({
             status: 'success',
-            message: 'Tạo tài khoản thành công!',
-            data: {
-               detail: result.data,
-            },
+            message: 'Đăng ký thành công!',
+            data: result,
          });
       } catch (error) {
          next(error);
@@ -52,22 +64,11 @@ class AuthController {
          };
 
          const result = await AuthService.login(req.body, deviceInfo);
-         const sessionIdToStore = result.tokens.sessionId || deviceInfo.sessionId;
 
-         res.cookie('refreshToken', result.tokens.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: result.timeRemember,
-            path: '/',
-         });
-
-         res.cookie('sessionId', sessionIdToStore, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: result.timeRemember,
-            path: '/',
+         CookieUtil.setAuthCookies(res, {
+            refreshToken: result.tokens.refreshToken,
+            sessionId: deviceInfo.sessionId!,
+            timeRemember: result.timeRemember,
          });
 
          res.status(200).send({
@@ -110,13 +111,7 @@ class AuthController {
          }
 
          // Xóa cookies
-         res.clearCookie('sessionId', {
-            path: '/',
-         });
-
-         res.clearCookie('refreshToken', {
-            path: '/',
-         });
+         CookieUtil.clearAuthCookies(res);
 
          res.status(200).send({
             status: 'success',
@@ -157,20 +152,10 @@ class AuthController {
             return res.sendStatus(204);
          }
 
-         res.cookie('refreshToken', result.tokens.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: '/',
-         });
-
-         res.cookie('sessionId', deviceInfo.sessionId, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: '/',
+         CookieUtil.setAuthCookies(res, {
+            refreshToken: result.tokens.refreshToken,
+            sessionId: deviceInfo.sessionId!,
+            timeRemember: 24 * 60 * 60 * 1000,
          });
 
          res.status(201).send({
@@ -260,22 +245,10 @@ class AuthController {
             deviceInfo
          );
 
-         const sessionIdToStore = result.tokens.sessionId || deviceInfo.sessionId;
-
-         res.cookie('refreshToken', result.tokens.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: result.timeRemember,
-            path: '/',
-         });
-
-         res.cookie('sessionId', sessionIdToStore, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-            maxAge: result.timeRemember,
-            path: '/',
+         CookieUtil.setAuthCookies(res, {
+            refreshToken: result.tokens.refreshToken,
+            sessionId: deviceInfo.sessionId!,
+            timeRemember: result.timeRemember,
          });
 
          res.redirect(`/oauth/callback?accessToken=${result.tokens.accessToken}`);

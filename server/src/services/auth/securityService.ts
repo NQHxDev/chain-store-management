@@ -1,8 +1,15 @@
+import dotenv from 'dotenv';
+
+dotenv.config({
+   quiet: true,
+   override: false,
+});
+
 import jwt from 'jsonwebtoken';
 import { uuidv7 } from 'uuidv7';
 import crypto from 'crypto';
 
-import redisService from './redisService';
+import redisService from '../redisService';
 import type {
    TokenPayload,
    TokenPair,
@@ -10,7 +17,7 @@ import type {
    DeviceInfo,
    TokenValidationResult,
    RefreshResult,
-} from '../types/interfaces/interfaceToken.ts';
+} from '../../types/interfaces/interfaceToken';
 import { AppError, ValidationError } from '@/appError';
 import AccountRepository from '@/repositories/repoAccount';
 
@@ -191,7 +198,7 @@ class SecurityService {
          userId: user.id,
          username: user.username,
          email: user.email,
-         role: user.role,
+         roles: user.role,
          sessionId,
       };
 

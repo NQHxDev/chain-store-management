@@ -10,13 +10,15 @@ import crypto from 'crypto';
 import mainRouter from '@/routes/mainRouter';
 import { errorHandler } from '@/middlewares/errorHandler';
 
-export async function createApp() {
+export async function createApp({ hostServer, portServer }) {
    const isDev = process.env.NODE_ENV !== 'production';
    const server = express();
 
    const appNext = next({
       dev: isDev,
       dir: '../client',
+      hostname: hostServer,
+      port: portServer,
    });
 
    await appNext.prepare();
@@ -28,6 +30,23 @@ export async function createApp() {
       res.setHeader('x-nonce', res.locals.nonce);
       next();
    });
+
+   if (!isDev) {
+      server.use(
+         helmet({
+            contentSecurityPolicy: {
+               useDefaults: true,
+               directives: {
+                  scriptSrc: ["'self'", (req, res: any) => `'nonce-${res.locals.nonce}'`],
+                  styleSrc: ["'self'", "'unsafe-inline'"],
+                  imgSrc: ["'self'", 'data:', 'blob:'],
+                  fontSrc: ["'self'", 'data:'],
+                  connectSrc: ["'self'"],
+               },
+            },
+         })
+      );
+   }
 
    server.use(compression());
    server.use(cookieParser());
@@ -66,21 +85,6 @@ export async function createApp() {
    server.all('/_next/{*splat}', (req, res) => {
       return handle(req, res);
    });
-
-   server.use(
-      helmet({
-         contentSecurityPolicy: {
-            useDefaults: true,
-            directives: {
-               scriptSrc: ["'self'", (req, res: any) => `'nonce-${res.locals.nonce}'`],
-               styleSrc: ["'self'", "'unsafe-inline'"],
-               imgSrc: ["'self'", 'data:', 'blob:'],
-               fontSrc: ["'self'", 'data:'],
-               connectSrc: ["'self'"],
-            },
-         },
-      })
-   );
 
    server.use(errorHandler);
 

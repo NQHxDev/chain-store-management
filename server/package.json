@@ -5,7 +5,7 @@
    "main": "./server.ts",
    "scripts": {
       "start": "tsx server.ts",
-      "dev": "tsx watch server.ts",
+      "dev": "tsx watch --ignore \"../client/**/*\" --ignore \"**/.next/**/*\" server.ts",
       "build": "npm run build --prefix client && npm run build:export --prefix client"
    },
    "keywords": [],

@@ -15,7 +15,7 @@ import {
    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { hasAnyRole } from '@/lib/auth/Role';
+import { hasAnyRole } from '@/lib/account/Role';
 import { LogOut } from 'lucide-react';
 
 export default function HeaderAuth() {
@@ -144,7 +144,7 @@ export default function HeaderAuth() {
                <DropdownMenuSeparator />
                <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                     <Link href="/account" className="py-1">
+                     <Link href="/account/profile" className="py-1">
                         Thông tin tài khoản
                      </Link>
                   </DropdownMenuItem>

@@ -20,7 +20,7 @@ async function startServer() {
       await initRedis();
       console.log('[✓] Redis Connected Successfully!');
 
-      const server = await createApp();
+      const server = await createApp({ hostServer, portServer });
 
       server.listen(portServer, hostServer, () => {
          console.log(`\n[>] Server running at http://${hostServer}:${portServer}`);

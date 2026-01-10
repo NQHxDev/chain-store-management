@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useDebouncedCheck } from '@/hooks/useDebouncedCheck';
 import { AuthService } from '@/services/authService';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function RegisterForm(): JSX.Element {
    const router = useRouter();
@@ -117,7 +118,6 @@ export default function RegisterForm(): JSX.Element {
       setServerError(null);
 
       try {
-         // Axios sẽ tự động throw error nếu status code không nằm trong dải 2xx
          await AuthService.register({
             email,
             username,
@@ -125,18 +125,26 @@ export default function RegisterForm(): JSX.Element {
             confirmPassword,
          });
 
+         const res = await AuthService.login({
+            identifier: email,
+            password,
+         });
+
+         const { account, tokens } = res.data.data;
+
+         useAuthStore.getState().setAuth(account, tokens.accessToken);
+
          toast.success('Đăng ký thành công!', {
-            description: 'Vui lòng đăng nhập để tiếp tục',
+            description: 'Chúc bạn có trải nghiệm vui vẻ',
             duration: 2000,
          });
 
          resetForm();
 
          setTimeout(() => {
-            router.push('/login');
+            router.push('/');
          }, 1000);
       } catch (err: unknown) {
-         // Xử lý UI khi có lỗi
          setPassword('');
          setPasswordTouched(false);
          setConfirmPassword('');
@@ -144,9 +152,7 @@ export default function RegisterForm(): JSX.Element {
 
          let message = 'Đăng ký thất bại';
 
-         // SỬA TẠI ĐÂY: Dùng axios.isAxiosError
          if (axios.isAxiosError(err)) {
-            // Truy cập vào cấu trúc res.data.message mà Backend trả về
             message = err.response?.data?.message || err.message || message;
          } else if (err instanceof Error) {
             message = err.message;
@@ -155,6 +161,7 @@ export default function RegisterForm(): JSX.Element {
          setServerError(message);
          toast.error('Đăng ký thất bại', {
             description: message,
+            duration: 2000,
          });
       } finally {
          setLoading(false);

@@ -6,19 +6,22 @@ import type {
    IAccount,
    IProfile,
    IOauth,
+   IRole,
 } from '@/types/interfaces/interfaceAccount';
 
 import { ValidationError, AuthError, ForbiddenError } from '@/appError';
 import RepoAccount, { OauthRepository, ProfileRepository } from '@/repositories/repoAccount';
 import type { DeviceInfo } from '@/types/interfaces/interfaceToken';
-import SecurityService from '@/services/securityService';
+import SecurityService from '@/services/auth/securityService';
 
 const repoAccount = new RepoAccount();
 const repoProfile = new ProfileRepository();
 const repoOauth = new OauthRepository();
 
+const timeOneDay = 24 * 60 * 60 * 1000;
+
 class AuthService {
-   static register = async (data: IAccountRequest) => {
+   static register = async (data: IAccountRequest, deviceInfo?: DeviceInfo) => {
       const isUsernameExists = await repoAccount.existsByUsername(data.username);
       if (isUsernameExists) {
          throw new ValidationError('Username đã tồn tại!');
@@ -36,15 +39,43 @@ class AuthService {
          username: data.username,
          password_hash,
          email: data.email,
+         status: 'pending',
       };
 
       await repoAccount.createAccount(newAccount);
+
+      const defaultRoleId = 3; // guest
+      if (deviceInfo) {
+         const tokenPair = await SecurityService.createTokenPair(
+            {
+               userId: newAccount.ac_id,
+               username: newAccount.username,
+               email: newAccount.email,
+               roles: [defaultRoleId],
+            },
+            deviceInfo
+         );
+
+         return {
+            account: {
+               ac_id: newAccount.ac_id,
+               username: newAccount.username,
+               email: newAccount.email,
+               roles: [{ role_id: defaultRoleId }],
+               status: newAccount.status,
+            },
+            tokens: tokenPair,
+            timeRemember: timeOneDay,
+         };
+      }
+
       return {
-         data: {
+         account: {
             ac_id: newAccount.ac_id,
             username: newAccount.username,
             email: newAccount.email,
-            status: newAccount.status || 'pending',
+            roles: [{ role_id: defaultRoleId }],
+            status: newAccount.status,
          },
       };
    };
@@ -82,7 +113,7 @@ class AuthService {
             userId: account.ac_id,
             username: account.username,
             email: account.email,
-            role: role_account.role_id,
+            roles: role_account.role_id,
          },
          deviceInfo,
          {
@@ -90,7 +121,6 @@ class AuthService {
          }
       );
 
-      const timeOneDay = 24 * 60 * 60 * 1000;
       const timeRememberSession = data.remember ? 7 * timeOneDay : timeOneDay;
 
       return {
@@ -98,7 +128,7 @@ class AuthService {
             ac_id: account.ac_id,
             username: account.username,
             email: account.email,
-            roles: role_account,
+            roles: Array.isArray(role_account) ? role_account : [{ role_id: role_account.role_id }],
          },
          tokens: tokenPair,
          timeRemember: timeRememberSession,
@@ -117,7 +147,7 @@ class AuthService {
    ) => {
       const oauth = await repoAccount.findByProvider('google', payload.sub);
 
-      let account, role_account;
+      let account: IAccount, role_account;
 
       if (oauth) {
          const result = await repoAccount.findByID(oauth.ac_id);
@@ -175,7 +205,7 @@ class AuthService {
             userId: account.ac_id,
             username: account.username,
             email: account.email,
-            role: role_account.role_id,
+            roles: role_account.role_id,
          },
          deviceInfo,
          {
