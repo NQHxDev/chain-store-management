@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
+import { useProfileStore } from '@/stores/profileStore';
 
 export default function OAuthCallbackPage() {
    const router = useRouter();
@@ -13,8 +14,15 @@ export default function OAuthCallbackPage() {
 
    useEffect(() => {
       if (!accessToken) return;
+
       setAccessToken(accessToken);
-      router.replace('/');
+
+      useProfileStore
+         .getState()
+         .fetchProfile()
+         .then(() => {
+            router.replace('/');
+         });
    }, [accessToken, router, setAccessToken]);
 
    return (

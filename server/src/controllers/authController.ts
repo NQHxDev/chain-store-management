@@ -5,9 +5,10 @@ dotenv.config({
    override: false,
 });
 
+import { uuidv7 } from 'uuidv7';
 import type { Request, Response, NextFunction } from 'express';
 
-import type { LoginRequestBody } from '@/types/interfaces/interfaceAccount';
+import type { AuthRequest, LoginRequestBody } from '@/types/interfaces/interfaceAccount';
 import type { DeviceInfo, StoredRefreshToken } from '@/types/interfaces/interfaceToken';
 
 import AuthService from '@/services/auth/authService';
@@ -15,8 +16,8 @@ import { AuthError, ValidationError } from '@/appError';
 import SecurityService from '@/services/auth/securityService';
 import redisService from '@/services/redisService';
 import googleClient from '@/configs/cfgGoogleClient';
-import { uuidv7 } from 'uuidv7';
 import { CookieUtil } from '@/utils/cookieUtil';
+import ProfileService from '@/services/auth/profileService';
 
 declare global {
    namespace Express {
@@ -226,8 +227,6 @@ class AuthController {
 
          if (!payload) throw new Error('Invalid Google Payload');
 
-         console.log(JSON.stringify(payload));
-
          const { email, name, picture, sub: googleId, at_hash } = payload;
 
          if (!payload.email_verified) {
@@ -258,7 +257,7 @@ class AuthController {
    };
 }
 
-class AccountProfileController {
+export class ProfileController {
    updatePhoneNumber = async (req: Request, res: Response, next: NextFunction) => {
       try {
          /*
@@ -269,6 +268,21 @@ class AccountProfileController {
          */
       } catch (error) {
          next(error);
+      }
+   };
+
+   getProfileMe = async (req: AuthRequest, res: Response, next: NextFunction) => {
+      try {
+         const userId = req.user!.userId;
+
+         const profile = await ProfileService.getProfileMe(userId);
+
+         res.json({
+            success: true,
+            data: profile,
+         });
+      } catch (err) {
+         next(err);
       }
    };
 }

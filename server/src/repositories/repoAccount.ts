@@ -232,6 +232,34 @@ export class ProfileRepository {
          );
       }
    };
+
+   getProfileByID = async (userId: string | number): Promise<any> => {
+      try {
+         const queryGetProfile = `
+            Select ac.ac_id, ac.password_hash, ap.full_name, ap.phone, ap.gender,
+               ap.birth_date, ap.address, ap.avatar_url, ap.created_at, ap.updated_at
+            from account_profiles ap
+            join accounts ac on ac.ac_id = ap.ac_id
+            where ap.ac_id = ? Limit 1
+         `;
+         const rows = await executeQuery(queryGetProfile, [userId]);
+
+         if (!rows || rows.length === 0) {
+            return null;
+         }
+         const profileUser = rows[0];
+
+         return profileUser;
+      } catch (error: any) {
+         console.error('Database Error Details:', {
+            message: error.message,
+            code: error.code,
+            sql: error.sql,
+            parameters: [userId],
+         });
+         throw new DatabaseError(`Xảy ra lỗi khi lấy Profile tài khoản: ${userId}`);
+      }
+   };
 }
 
 export class OauthRepository {

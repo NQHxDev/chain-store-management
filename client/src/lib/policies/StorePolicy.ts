@@ -34,7 +34,7 @@ const storePolicies: StorePolicy[] = [
       id: 1,
       category: 'mua-hang',
       title: 'Chính sách mua hàng',
-      description: 'Quy định về quy trình mua hàng và thanh toán tại WebStoreGame',
+      description: 'Quy định về quy trình mua hàng và thanh toán tại ZeionStore',
       details: [
          'Độ tuổi tối thiểu: 13 tuổi (có sự đồng ý của phụ huynh nếu dưới 18)',
          'Mỗi tài khoản chỉ được sở hữu bởi một người duy nhất',
@@ -104,7 +104,7 @@ const storePolicies: StorePolicy[] = [
          'Mỗi mã khuyến mãi chỉ sử dụng được một lần/tài khoản',
          'Không cộng dồn nhiều mã khuyến mãi trong một đơn hàng',
          'Áp dụng tùy thuộc vào điều kiện cụ thể của từng chương trình',
-         'WebStoreGame có quyền hủy mã khuyến mãi nếu phát hiện lạm dụng',
+         'ZeionStore có quyền hủy mã khuyến mãi nếu phát hiện lạm dụng',
          'Không hoàn tiền chênh lệch sau khi sử dụng mã khuyến mãi',
       ],
       icon: 'FaTag',
@@ -208,7 +208,7 @@ const supportChannels: SupportChannel[] = [
       responseTime: '24 giờ',
       hours: '24/7',
       icon: 'FaCalendarAlt',
-      contact: 'support@webstoregame.com',
+      contact: 'support@zeionstore.com',
    },
    {
       id: 3,

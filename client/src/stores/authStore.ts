@@ -1,12 +1,7 @@
 import { create } from 'zustand';
 import { AuthService } from '@/services/authService';
-
-type User = {
-   ac_id: string;
-   username: string;
-   email: string;
-   roles: { role_id: number }[];
-};
+import { useProfileStore } from '@/stores/profileStore';
+import { Account } from '@/lib/account/Account';
 
 type LoginPayload = {
    identifier: string;
@@ -14,20 +9,20 @@ type LoginPayload = {
 };
 
 type AuthState = {
-   user: User | null;
+   account: Account | null;
    accessToken: string | null;
    hydrated: boolean;
 
    hydrate: () => Promise<void>;
-   setAuth: (user: User, token: string) => void;
-   login: (payload: LoginPayload) => Promise<User>;
+   setAuth: (user: Account, token: string) => void;
+   login: (payload: LoginPayload) => Promise<Account>;
    logout: () => Promise<void>;
    clearAuth: () => void;
    setAccessToken: (token: string) => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-   user: null,
+   account: null,
    accessToken: null,
    hydrated: false,
 
@@ -38,7 +33,7 @@ export const useAuthStore = create<AuthState>((set) => ({
          const { account, accessToken } = res.data.data;
 
          set({
-            user: account,
+            account: account,
             accessToken,
             hydrated: true,
          });
@@ -47,15 +42,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
    },
 
-   setAuth: (user, token) =>
+   setAuth: (account, token) =>
       set({
-         user,
+         account,
          accessToken: token,
       }),
 
    clearAuth: () =>
       set({
-         user: null,
+         account: null,
          accessToken: null,
       }),
 
@@ -65,7 +60,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (res.data.status) {
          set({
-            user: account,
+            account: account,
             accessToken: tokens.accessToken,
          });
 
@@ -81,7 +76,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       } catch (error) {
          console.error('Logout API Failed:', error);
       } finally {
-         set({ user: null, accessToken: null });
+         set({ account: null, accessToken: null });
+         useProfileStore.getState().clearProfile();
 
          window.location.href = '/';
       }

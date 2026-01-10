@@ -1,14 +1,14 @@
 export interface UserProfile {
-   id: string;
+   id: string | number;
    name: string;
-   email: string;
    phone?: string;
    hasPhone: boolean;
    gender?: 'male' | 'female' | 'other';
-   address?: string;
    dateOfBirth?: string;
+   address?: string;
    avatar?: string;
    hasPassword: boolean;
+
    createdAt: string;
    updatedAt: string;
 }

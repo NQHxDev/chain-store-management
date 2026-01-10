@@ -122,7 +122,6 @@ class SecurityService {
     */
    static async verifyAccessToken(token: string): Promise<TokenValidationResult> {
       try {
-         // Kiểm tra token có trong blacklist không
          const isBlacklisted = await this.isTokenBlacklisted(token);
          if (isBlacklisted) {
             return {

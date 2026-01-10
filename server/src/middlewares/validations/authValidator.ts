@@ -1,7 +1,10 @@
+import jwt from 'jsonwebtoken';
 import { body, param, query, validationResult } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 
-import { ValidationError } from '@/appError';
+import { AuthError, ValidationError } from '@/appError';
+import SecurityService from '@/services/auth/securityService';
+import type { AuthRequest } from '@/types/interfaces/interfaceAccount';
 
 class AuthValidator {
    static login() {
@@ -238,5 +241,28 @@ class AuthValidator {
       next();
    }
 }
+
+export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
+   try {
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader?.startsWith('Bearer ')) {
+         throw new AuthError('Thiếu Access Token!');
+      }
+
+      const accessToken = authHeader.split(' ')[1];
+
+      const { isValid, payload } = await SecurityService.verifyAccessToken(accessToken);
+
+      if (!isValid) {
+         throw new ValidationError('Access Token hết hạn hoặc không đúng!');
+      }
+
+      req.user = { userId: payload.userId };
+      next();
+   } catch (err) {
+      next(new AuthError('Token không hợp lệ hoặc đã hết hạn'));
+   }
+};
 
 export default AuthValidator;

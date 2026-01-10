@@ -17,12 +17,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { Account } from '@/lib/account/Account';
 
 interface PersonalInfoProps {
-   profile: UserProfile;
+   profile: UserProfile | null;
+   account: Account | null;
 }
 
-export default function PersonalInfo({ profile }: PersonalInfoProps) {
+export default function PersonalInfo({ profile, account }: PersonalInfoProps) {
    const [dateOfBirth, setDateOfBirth] = useState<Date>();
 
    return (
@@ -34,7 +36,7 @@ export default function PersonalInfo({ profile }: PersonalInfoProps) {
                </Label>
                <Input
                   id="name"
-                  defaultValue={profile.name}
+                  defaultValue={profile?.name || 'Nguyễn Văn A'}
                   className="border-gray-300 focus:border-gray-900 focus:ring-gray-900"
                />
             </div>
@@ -43,14 +45,14 @@ export default function PersonalInfo({ profile }: PersonalInfoProps) {
                <Label htmlFor="gender" className="text-gray-700">
                   Giới tính
                </Label>
-               <Select defaultValue={profile.gender}>
+               <Select defaultValue={profile?.gender || 'unknown'}>
                   <SelectTrigger className="border-gray-300 focus:border-gray-900 focus:ring-gray-900">
                      <SelectValue placeholder="Chọn giới tính" />
                   </SelectTrigger>
                   <SelectContent>
                      <SelectItem value="male">Nam</SelectItem>
                      <SelectItem value="female">Nữ</SelectItem>
-                     <SelectItem value="other">Khác</SelectItem>
+                     <SelectItem value="unknown">Khác</SelectItem>
                   </SelectContent>
                </Select>
             </div>
@@ -90,7 +92,7 @@ export default function PersonalInfo({ profile }: PersonalInfoProps) {
                <Input
                   id="email"
                   type="email"
-                  defaultValue={profile.email}
+                  defaultValue={account ? account.email : 'example@gmail.com'}
                   disabled
                   className="bg-gray-50 border-gray-300 text-gray-500"
                />

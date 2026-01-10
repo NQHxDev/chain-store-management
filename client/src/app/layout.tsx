@@ -14,7 +14,7 @@ const beVietnamPro = Be_Vietnam_Pro({
 });
 
 export const metadata: Metadata = {
-   title: 'WebStore',
+   title: 'ZeionStore',
    description: 'Nơi bạn có thể tìm thấy mọi thứ bạn cần!',
 };
 

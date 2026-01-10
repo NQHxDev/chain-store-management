@@ -201,7 +201,7 @@ export default function PrivacyPage() {
                                  </div>
                                  <p className="text-gray-600 text-sm">
                                     Sử dụng thông tin để tạo tài khoản, xác thực, và cung cấp đầy đủ
-                                    tính năng của WebStoreGame.
+                                    tính năng của ZeionStore.
                                  </p>
                               </div>
 

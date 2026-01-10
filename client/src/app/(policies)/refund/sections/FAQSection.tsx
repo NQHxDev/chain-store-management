@@ -24,11 +24,11 @@ export default function RefundFAQSection() {
                },
                {
                   q: 'Tôi mua game bằng ví điện tử nhưng đã xóa tài khoản ví đó, làm thế nào để nhận hoàn tiền?',
-                  a: 'Vui lòng liên hệ hỗ trợ qua email refund@webstoregame.com với thông tin tài khoản mới. Chúng tôi sẽ hỗ trợ chuyển khoản qua ngân hàng.',
+                  a: 'Vui lòng liên hệ hỗ trợ qua email refund@zeionstore.com với thông tin tài khoản mới. Chúng tôi sẽ hỗ trợ chuyển khoản qua ngân hàng.',
                },
                {
                   q: 'Có phí hoàn tiền nào không?',
-                  a: 'WebStoreGame không thu phí hoàn tiền. Tuy nhiên, một số ngân hàng hoặc ví điện tử có thể thu phí xử lý giao dịch.',
+                  a: 'ZeionStore không thu phí hoàn tiền. Tuy nhiên, một số ngân hàng hoặc ví điện tử có thể thu phí xử lý giao dịch.',
                },
                {
                   q: 'Tôi mua bundle nhiều game, có thể hoàn tiền 1 game trong bundle không?',
@@ -69,7 +69,7 @@ export default function RefundFAQSection() {
                </p>
                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
-                     href="mailto:refund@webstoregame.com"
+                     href="mailto:refund@zeionstore.com"
                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-900 font-medium rounded-lg hover:bg-gray-100 transition-colors"
                   >
                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

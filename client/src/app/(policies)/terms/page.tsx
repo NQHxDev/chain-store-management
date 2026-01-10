@@ -549,7 +549,7 @@ export default function TermsPage() {
                                  </Link>
 
                                  <a
-                                    href="mailto:support@webstoregame.com"
+                                    href="mailto:support@zeionstore.com"
                                     className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white border border-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-50 transition-colors"
                                  >
                                     <svg

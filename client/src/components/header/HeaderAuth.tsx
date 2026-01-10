@@ -19,7 +19,7 @@ import { hasAnyRole } from '@/lib/account/Role';
 import { LogOut } from 'lucide-react';
 
 export default function HeaderAuth() {
-   const { user, logout } = useAuthStore();
+   const { account, logout } = useAuthStore();
 
    const hydrated = useAuthStore((s) => s.hydrated);
 
@@ -32,7 +32,7 @@ export default function HeaderAuth() {
       );
    }
 
-   if (!user) {
+   if (!account) {
       return (
          <div className="flex gap-3">
             <Link
@@ -53,11 +53,9 @@ export default function HeaderAuth() {
    }
 
    const renderManagerPanel = () => {
-      console.log('User:', user);
+      if (!account || !account.roles) return null;
 
-      if (!user || !user.roles) return null;
-
-      if (!hasAnyRole(user.roles, ['admin', 'manager'])) return null;
+      if (!hasAnyRole(account.roles, ['admin', 'manager'])) return null;
 
       return (
          <>
@@ -122,22 +120,24 @@ export default function HeaderAuth() {
             >
                <button className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-zinc-100 active:bg-zinc-200 outline-none group">
                   <div className="h-8 w-8 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold transition-transform group-hover:scale-105">
-                     {user.username.charAt(0).toUpperCase()}
+                     {account.username.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-zinc-700 group-hover:text-zinc-900">
-                     {user.username}
+                     {account.username}
                   </span>
                </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="start">
                <DropdownMenuLabel>
-                  <div className="text-sm text-gray-600 flex flex-col items-start gap-0.5">
+                  <div className="text-sm text-gray-600 flex flex-wrap items-center gap-1">
                      <span>Xin chào:</span>
                      <span
-                        className="text-gray-900 w-full truncate text-sm leading-tight"
-                        title={user.username}
+                        className={`text-gray-900 truncate text-sm leading-tight ${
+                           account.username.length > 15 ? 'block w-full' : 'inline-block'
+                        }`}
+                        title={account.username}
                      >
-                        {user.username}
+                        {account.username}
                      </span>
                   </div>
                </DropdownMenuLabel>

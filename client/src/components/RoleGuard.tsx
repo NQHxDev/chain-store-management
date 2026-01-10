@@ -13,20 +13,20 @@ type Props = {
 
 export default function RoleGuard({ allowedRoles, children }: Props) {
    const router = useRouter();
-   const { user, hydrated } = useAuthStore();
+   const { account, hydrated } = useAuthStore();
 
    useEffect(() => {
       if (!hydrated) return;
 
-      if (!user || !hasAnyRole(user.roles, allowedRoles)) {
+      if (!account || !hasAnyRole(account.roles, allowedRoles)) {
          toast.error('Bạn không có quyền truy cập!', { duration: 1500 });
          router.replace('/');
       }
-   }, [user, hydrated, allowedRoles, router]);
+   }, [account, hydrated, allowedRoles, router]);
 
    if (!hydrated) return null;
 
-   if (!user || !hasAnyRole(user.roles, allowedRoles)) {
+   if (!account || !hasAnyRole(account.roles, allowedRoles)) {
       return null;
    }
 

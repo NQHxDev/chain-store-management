@@ -290,7 +290,7 @@ export default function StorePolicyPage() {
                         <h3 className="text-lg font-semibold text-gray-900">
                            Cam kết mức độ dịch vụ (SLA)
                         </h3>
-                        <p className="text-sm text-gray-600">WebStoreGame cam kết với khách hàng</p>
+                        <p className="text-sm text-gray-600">ZeionStore cam kết với khách hàng</p>
                      </div>
                   </div>
 
@@ -382,7 +382,7 @@ export default function StorePolicyPage() {
                      <h3 className="text-xl font-bold mb-3">Cần giải đáp về chính sách?</h3>
 
                      <p className="text-gray-600 mb-6">
-                        Đội ngũ hỗ trợ của WebStoreGame luôn sẵn sàng giải đáp mọi thắc mắc về chính
+                        Đội ngũ hỗ trợ của ZeionStore luôn sẵn sàng giải đáp mọi thắc mắc về chính
                         sách cửa hàng.
                      </p>
 

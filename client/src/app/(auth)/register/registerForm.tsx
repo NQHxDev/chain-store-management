@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useDebouncedCheck } from '@/hooks/useDebouncedCheck';
 import { AuthService } from '@/services/authService';
 import { useAuthStore } from '@/stores/authStore';
+import { CheckCircle, Eye, EyeOff, XCircle } from 'lucide-react';
 
 export default function RegisterForm(): JSX.Element {
    const router = useRouter();
@@ -36,6 +37,9 @@ export default function RegisterForm(): JSX.Element {
    const [loading, setLoading] = useState(false);
    const [serverError, setServerError] = useState<string | null>(null);
 
+   const [showPassword, setShowPassword] = useState(false);
+   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
    // --- Validation functions ---
    const validateEmail = (value: string): string | null => {
       if (!value.trim()) return 'Email là bắt buộc';
@@ -45,8 +49,16 @@ export default function RegisterForm(): JSX.Element {
    };
 
    const validateUsername = (value: string): string | null => {
-      if (!value.trim()) return 'Vui lòng nhập Tên đăng nhập';
-      if (value.length < 6 || value.length > 30) return 'Tài khoản phải từ 6 đến 30 ký tự';
+      const trimmedValue = value.trim();
+      if (!trimmedValue) return 'Vui lòng nhập Tên đăng nhập';
+      if (trimmedValue.length < 6 || trimmedValue.length > 30) {
+         return 'Tài khoản phải từ 6 đến 30 ký tự';
+      }
+      const latinRegex = /^[a-zA-Z0-9]+$/;
+
+      if (!latinRegex.test(trimmedValue)) {
+         return 'Tài khoản không chưa ký tự đặc biệt hay khoảng trắng';
+      }
       return null;
    };
 
@@ -83,6 +95,11 @@ export default function RegisterForm(): JSX.Element {
       isUsernameUnlocked && confirmPasswordTouched
          ? validateConfirmPassword(confirmPassword)
          : null;
+
+   const isLengthValid = password.length >= 6;
+   const hasUppercase = /[A-Z]/.test(password);
+   const hasNumber = /\d/.test(password);
+   const isAllValid = isLengthValid && hasUppercase && hasNumber;
 
    const canSubmit =
       isUsernameUnlocked &&
@@ -125,6 +142,8 @@ export default function RegisterForm(): JSX.Element {
             confirmPassword,
          });
 
+         await new Promise((resolve) => setTimeout(resolve, 1000));
+
          const res = await AuthService.login({
             identifier: email,
             password,
@@ -143,7 +162,7 @@ export default function RegisterForm(): JSX.Element {
 
          setTimeout(() => {
             router.push('/');
-         }, 1000);
+         }, 200);
       } catch (err: unknown) {
          setPassword('');
          setPasswordTouched(false);
@@ -185,16 +204,25 @@ export default function RegisterForm(): JSX.Element {
                   setEmailTouched(true);
                }}
             />
-            <p className="text-xs">
-               {emailChecking && 'Đang kiểm tra...'}
-               {emailTouched && emailError && <span className="text-red-500">{emailError}</span>}
-               {!emailChecking && emailTouched && emailAvailable && !emailError && (
-                  <span className="text-green-600">Email hợp lệ</span>
+            <div className="text-xs min-h-5">
+               {emailChecking && <span className="text-muted-foreground">Đang kiểm tra...</span>}
+
+               {!emailChecking && emailError && <span className="text-red-500">{emailError}</span>}
+
+               {!emailChecking && !emailError && email && emailAvailable && (
+                  <div className="flex items-center gap-1 mt-1">
+                     <CheckCircle className="w-4 h-4 text-green-600" />
+                     <p className="text-xs text-green-600 font-medium">Email chưa đăng ký</p>
+                  </div>
                )}
-               {!emailChecking && emailTouched && emailAvailable === false && (
-                  <span className="text-red-500">Email đã tồn tại</span>
+
+               {!emailChecking && email && emailAvailable === false && (
+                  <div className="flex items-center gap-1 mt-1 pt-1">
+                     <XCircle className="w-4 h-4 text-red-500" />
+                     <p className="text-xs text-red-500">Email đã tồn tại</p>
+                  </div>
                )}
-            </p>
+            </div>
          </div>
 
          {/* Username */}
@@ -210,48 +238,102 @@ export default function RegisterForm(): JSX.Element {
                }}
                disabled={!isUsernameUnlocked}
             />
-            <p className="text-xs">
-               {isUsernameUnlocked && usernameChecking && 'Đang kiểm tra...'}
+            <div className="text-xs min-h-5">
+               {isUsernameUnlocked && usernameChecking && (
+                  <span className="text-muted-foreground">Đang kiểm tra...</span>
+               )}
 
-               {isUsernameUnlocked &&
-                  usernameTouched &&
-                  (usernameError ? (
-                     <span className="text-red-500">{usernameError}</span>
-                  ) : usernameAvailable === false ? (
-                     <span className="text-red-500">Tài khoản đã tồn tại</span>
-                  ) : usernameAvailable ? (
-                     <span className="text-green-600">Có thể sử dụng</span>
-                  ) : null)}
-            </p>
+               {isUsernameUnlocked && usernameError && (
+                  <div className="flex items-center gap-1 mt-1 pt-1">
+                     <XCircle className="w-4 h-4 text-red-500" />
+                     <p className="text-xs text-red-500">{usernameError}</p>
+                  </div>
+               )}
+
+               {isUsernameUnlocked && !usernameError && username && usernameAvailable && (
+                  <div className="flex items-center gap-1 mt-1">
+                     <CheckCircle className="w-4 h-4 text-green-600" />
+                     <p className="text-xs text-green-600 font-medium">Có thể sử dụng</p>
+                  </div>
+               )}
+
+               {isUsernameUnlocked && username && usernameAvailable === false && (
+                  <div className="flex items-center gap-1 mt-1 pt-1">
+                     <XCircle className="w-4 h-4 text-red-500" />
+                     <p className="text-xs text-red-500">Tài khoản đã tồn tại</p>
+                  </div>
+               )}
+            </div>
          </div>
 
          {/* Password */}
          <div className="space-y-1.5">
             <Label htmlFor="password">Mật khẩu</Label>
-            <Input
-               id="password"
-               type="password"
-               value={password}
-               onChange={(e) => setPassword(e.target.value)}
-               onBlur={() => setPasswordTouched(true)}
-               disabled={!isUsernameUnlocked}
-            />
-            {passwordTouched && passwordError && (
-               <p className="text-xs text-red-500">{passwordError}</p>
+            <div className="relative">
+               <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => setPasswordTouched(true)}
+                  disabled={!isUsernameUnlocked}
+                  className="pr-10"
+               />
+               <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+               >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+               </button>
+            </div>
+
+            {passwordTouched && (
+               <>
+                  {!isAllValid ? (
+                     <ul className="text-xs mt-1 text-muted-foreground space-y-0.5">
+                        <li className={isLengthValid ? 'text-green-600' : ''}>• Ít nhất 6 ký tự</li>
+                        <li className={hasUppercase ? 'text-green-600' : ''}>• Có chữ hoa</li>
+                        <li className={hasNumber ? 'text-green-600' : ''}>• Có số</li>
+
+                        {passwordError && (
+                           <div className="flex items-center gap-1 mt-1 pt-1">
+                              <XCircle className="w-4 h-4 text-red-500" />
+                              <p className="text-xs text-red-500">{passwordError}</p>
+                           </div>
+                        )}
+                     </ul>
+                  ) : (
+                     <div className="flex items-center gap-1 mt-1">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <p className="text-xs text-green-600 font-medium">Mật khẩu hợp lệ</p>
+                     </div>
+                  )}
+               </>
             )}
          </div>
 
          {/* Confirm Password */}
          <div className="space-y-1.5">
             <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-            <Input
-               id="confirmPassword"
-               type="password"
-               value={confirmPassword}
-               onChange={(e) => setConfirmPassword(e.target.value)}
-               onBlur={() => setConfirmPasswordTouched(true)}
-               disabled={!isUsernameUnlocked}
-            />
+            <div className="relative">
+               <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => setConfirmPasswordTouched(true)}
+                  disabled={!isUsernameUnlocked}
+                  className="pr-10"
+               />
+               <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+               >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+               </button>
+            </div>
             {confirmPasswordTouched && confirmPasswordError && (
                <p className="text-xs text-red-500">{confirmPasswordError}</p>
             )}
@@ -288,7 +370,7 @@ export default function RegisterForm(): JSX.Element {
             </div>
          </div>
 
-         <Button className="mt-4 w-full" disabled={!canSubmit || loading} type="submit">
+         <Button className="mt-4 w-full" disabled={!canSubmit} type="submit">
             {loading ? 'Đang đăng ký...' : 'Đăng ký'}
          </Button>
          {serverError && <p className="text-sm text-red-500 text-center">{serverError}</p>}

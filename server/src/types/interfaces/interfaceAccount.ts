@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface IRole {
    role_id: string | number;
    role_name: string;
@@ -29,7 +31,7 @@ export interface IOauth {
    provider_user_id: string | number;
 }
 
-export interface IAccountRequest {
+export interface IAccountRequest extends Request {
    email: string;
    username: string;
    password: string;
@@ -40,4 +42,10 @@ export interface LoginRequestBody {
    identifier: string;
    password: string;
    remember: boolean;
+}
+
+export interface AuthRequest extends Request {
+   user?: {
+      userId: string | number;
+   };
 }

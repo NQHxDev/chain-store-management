@@ -1,11 +1,12 @@
 import express from 'express';
 
 import RateLimit from '@/middlewares/rateLimit';
-import AuthController from '@/controllers/authController';
-import AuthValidator from '@/middlewares/validations/authValidator';
+import AuthController, { ProfileController } from '@/controllers/authController';
+import AuthValidator, { authenticate } from '@/middlewares/validations/authValidator';
 
 const authRouter = express.Router();
 const authController = new AuthController();
+const profileController = new ProfileController();
 
 // Authentication
 authRouter.post(
@@ -25,6 +26,7 @@ authRouter.get('/check-identifier', authController.checkIdentifier);
 authRouter.post('/refresh-token', authController.refreshToken);
 
 // authRouter.post('/update-phone-number');
+authRouter.get('/profile/me', authenticate, profileController.getProfileMe);
 
 // Change FullName User
 // Update Location

@@ -13,7 +13,7 @@ export default function RefundPolicySection() {
                   <h3 className="text-xl font-semibold text-gray-900">Tổng quan chính sách</h3>
                   <p className="text-gray-600">
                      Chính sách hoàn tiền được thiết kế để bảo vệ quyền lợi của cả khách hàng và
-                     WebStoreGame. Chúng tôi cam kết xử lý công bằng và minh bạch mọi yêu cầu hoàn
+                     ZeionStore. Chúng tôi cam kết xử lý công bằng và minh bạch mọi yêu cầu hoàn
                      tiền.
                   </p>
                </div>

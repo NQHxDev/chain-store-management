@@ -6,15 +6,17 @@ import ContactInfo from './ContactInfo';
 import SecuritySection from './SecuritySection';
 import { Button } from '@/components/ui/button';
 import { Save, User, Phone, Shield } from 'lucide-react';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfileStore } from '@/stores/profileStore';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function ProfileForm() {
-   const { profile, isLoading } = useProfile();
+   const { userProfile, loading } = useProfileStore();
+   const { account, hydrated } = useAuthStore();
    const [activeSection, setActiveSection] = useState<'personal' | 'contact' | 'security'>(
       'personal'
    );
 
-   if (isLoading) {
+   if (loading && !hydrated) {
       return <div>Loading...</div>;
    }
 
@@ -22,51 +24,57 @@ export default function ProfileForm() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
          {/* Navigation Tabs */}
          <div className="border-b border-gray-200">
-            <nav className="flex space-x-2 px-6 pt-4" aria-label="Tabs">
+            <nav className="flex items-center space-x-5 px-6 py-3" aria-label="Tabs">
                <Button
                   variant={activeSection === 'personal' ? 'default' : 'ghost'}
-                  className={`gap-2 ${
+                  className={`gap-2 flex items-center justify-center ${
                      activeSection === 'personal'
                         ? 'bg-gray-900'
                         : 'text-gray-600 hover:text-gray-900'
                   }`}
                   onClick={() => setActiveSection('personal')}
                >
-                  <User className="w-4 h-4" />
-                  Thông tin cá nhân
+                  <User className="w-4 h-4 shrink-0" />{' '}
+                  <span className="leading-none">Thông tin cá nhân</span>{' '}
                </Button>
+
                <Button
                   variant={activeSection === 'contact' ? 'default' : 'ghost'}
-                  className={`gap-2 ${
+                  className={`gap-2 flex items-center justify-center ${
                      activeSection === 'contact'
                         ? 'bg-gray-900'
                         : 'text-gray-600 hover:text-gray-900'
                   }`}
                   onClick={() => setActiveSection('contact')}
                >
-                  <Phone className="w-4 h-4" />
-                  Liên hệ
+                  <Phone className="w-4 h-4 shrink-0" />
+                  <span className="leading-none">Liên hệ</span>
                </Button>
+
                <Button
                   variant={activeSection === 'security' ? 'default' : 'ghost'}
-                  className={`gap-2 ${
+                  className={`gap-2 flex items-center justify-center ${
                      activeSection === 'security'
                         ? 'bg-gray-900'
                         : 'text-gray-600 hover:text-gray-900'
                   }`}
                   onClick={() => setActiveSection('security')}
                >
-                  <Shield className="w-4 h-4" />
-                  Bảo mật
+                  <Shield className="w-4 h-4 shrink-0" />
+                  <span className="leading-none">Bảo mật</span>
                </Button>
             </nav>
          </div>
 
          {/* Form Content */}
          <div className="p-6">
-            {activeSection === 'personal' && profile && <PersonalInfo profile={profile} />}
-            {activeSection === 'contact' && profile && <ContactInfo profile={profile} />}
-            {activeSection === 'security' && profile && <SecuritySection profile={profile} />}
+            {activeSection === 'personal' && userProfile && (
+               <PersonalInfo profile={userProfile} account={account} />
+            )}
+            {activeSection === 'contact' && userProfile && <ContactInfo profile={userProfile} />}
+            {activeSection === 'security' && userProfile && (
+               <SecuritySection profile={userProfile} />
+            )}
 
             {/* Save Button */}
             <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end">

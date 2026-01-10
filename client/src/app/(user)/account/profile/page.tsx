@@ -1,11 +1,10 @@
-// /app/account/profile/page.tsx
 import ProfileForm from '@/components/profile';
 import ProfileSkeleton from '@/components/profile/ProfileSkeleton';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
-   title: 'Thông tin cá nhân | Tài khoản của bạn',
+   title: 'Thông tin cá nhân - Tài khoản của bạn',
    description:
       'Quản lý và cập nhật thông tin cá nhân, số điện thoại, địa chỉ và bảo mật tài khoản',
    keywords: 'thông tin cá nhân, tài khoản, cập nhật thông tin, bảo mật',
@@ -15,7 +14,7 @@ export default function AccountProfilePage() {
    return (
       <div className="min-h-screen bg-gray-50 py-8">
          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Header with SEO optimized */}
+            {/* Header */}
             <div className="mb-8">
                <h1 className="text-3xl font-bold text-gray-900">Thông tin cá nhân</h1>
                <p className="mt-2 text-gray-600">

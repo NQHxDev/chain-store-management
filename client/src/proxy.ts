@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 const protectedRoutes = ['/dashboard', '/account', '/settings'];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
    const refreshToken = req.cookies.get('refreshToken');
    const { pathname } = req.nextUrl;
 

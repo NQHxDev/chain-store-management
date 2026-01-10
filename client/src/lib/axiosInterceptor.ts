@@ -17,15 +17,6 @@ const processQueue = (error: unknown, token: string | null = null) => {
    queue = [];
 };
 
-// Request: gắn accessToken
-axiosClient.interceptors.request.use((config) => {
-   const token = useAuthStore.getState().accessToken;
-   if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-   }
-   return config;
-});
-
 // Response: refresh khi 401
 axiosClient.interceptors.response.use(
    (res) => res,
