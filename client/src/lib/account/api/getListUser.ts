@@ -24,6 +24,105 @@ const MOCK_USERS = [
 
       created_at: '2024-01-20T14:45:00Z',
    },
+   {
+      ac_id: '3',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '4',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '5',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '6',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '7',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '8',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '9',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '10',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
+   {
+      ac_id: '11',
+      username: 'user_001',
+      fullname: 'Nguyễn Văn A',
+      email: 'nguyenvana@example.com',
+      phone: '0912345678',
+      avatar: '',
+      role: 'admin',
+      status: 'active',
+      created_at: '2024-01-15T10:30:00Z',
+   },
 ];
 
 interface GetUsersParams {
@@ -36,10 +135,7 @@ interface GetUsersParams {
 
 export async function getUsers({ page, limit, search, status, role }: GetUsersParams): Promise<{
    users: DashboardUser[];
-   total: number;
-   totalPages: number;
 }> {
-   // Simulate API call
    await new Promise((resolve) => setTimeout(resolve, 500));
 
    let filteredUsers = [...MOCK_USERS];
@@ -63,8 +159,7 @@ export async function getUsers({ page, limit, search, status, role }: GetUsersPa
    }
 
    const startIndex = (page - 1) * limit;
-   const endIndex = startIndex + limit;
-   const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + limit);
 
    return {
       users: paginatedUsers.map((user) => ({
@@ -78,8 +173,6 @@ export async function getUsers({ page, limit, search, status, role }: GetUsersPa
          status: user.status as 'active' | 'inactive' | 'pending',
          created_at: user.created_at,
       })),
-      total: filteredUsers.length,
-      totalPages: Math.ceil(filteredUsers.length / limit),
    };
 }
 

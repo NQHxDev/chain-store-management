@@ -2,7 +2,7 @@ import { Request } from 'express';
 
 export interface IRole {
    role_id: string | number;
-   role_name: string;
+   role_name?: string;
    role_desc?: string;
 }
 
@@ -47,5 +47,6 @@ export interface LoginRequestBody {
 export interface AuthRequest extends Request {
    user?: {
       userId: string | number;
+      roles: IRole[];
    };
 }

@@ -31,7 +31,7 @@ export default function UserTable() {
    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
 
-   const { users, totalPages, isLoading } = useUsers({
+   const { users, hasNextPage, isLoading } = useUsers({
       page: currentPage,
       limit: 10,
    });
@@ -201,22 +201,29 @@ export default function UserTable() {
          </div>
 
          {/* Pagination */}
-         {totalPages > 1 && (
-            <div className="border-t border-gray-200 px-6 py-4 flex justify-center">
-               <div className="flex gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                     <Button
-                        key={page}
-                        variant={currentPage === page ? 'default' : 'outline'}
-                        onClick={() => setCurrentPage(page)}
-                        className="min-w-10"
-                     >
-                        {page}
-                     </Button>
-                  ))}
-               </div>
+         <div className="border-t border-gray-200 px-6 py-4 flex justify-center">
+            <div className="flex items-center gap-3">
+               <Button
+                  variant="outline"
+                  disabled={currentPage === 1 || isLoading}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+               >
+                  ← Quay lại
+               </Button>
+
+               <span className="px-4 py-2 text-sm font-medium border rounded">
+                  Trang {currentPage}
+               </span>
+
+               <Button
+                  variant="outline"
+                  disabled={!hasNextPage || isLoading}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+               >
+                  Tiếp →
+               </Button>
             </div>
-         )}
+         </div>
 
          {/* Empty State */}
          {users.length === 0 && !isLoading && (

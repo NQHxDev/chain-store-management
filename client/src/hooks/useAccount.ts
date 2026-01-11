@@ -12,9 +12,9 @@ interface UseUsersProps {
 
 export function useUsers({ page, limit, search, status, role }: UseUsersProps) {
    const [users, setUsers] = useState<DashboardUser[]>([]);
-   const [totalPages, setTotalPages] = useState(1);
    const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState<string | null>(null);
+   const [hasNextPage, setHasNextPage] = useState(false);
 
    useEffect(() => {
       const fetchUsers = async () => {
@@ -31,7 +31,8 @@ export function useUsers({ page, limit, search, status, role }: UseUsersProps) {
             });
 
             setUsers(data.users);
-            setTotalPages(data.totalPages);
+
+            setHasNextPage(data.users.length === limit);
          } catch (err) {
             setError('Không thể tải danh sách người dùng');
             console.error(err);
@@ -43,5 +44,5 @@ export function useUsers({ page, limit, search, status, role }: UseUsersProps) {
       fetchUsers();
    }, [page, limit, search, status, role]);
 
-   return { users, totalPages, isLoading, error };
+   return { users, isLoading, error, hasNextPage };
 }

@@ -1,3 +1,4 @@
+import { loadDataOnBoot } from './src/mainLoader';
 import dotenv from 'dotenv';
 
 dotenv.config({
@@ -19,6 +20,8 @@ async function startServer() {
 
       await initRedis();
       console.log('[✓] Redis Connected Successfully!');
+
+      await loadDataOnBoot();
 
       const server = await createApp({ hostServer, portServer });
 

@@ -1,13 +1,13 @@
 import { DatabaseError } from '@/appError';
+import { getRoleList } from '@/mainLoader';
 import { executeQuery, transactionQuery } from '@/services/databaseService';
-import ListRole from '@/types/data/listRole';
 
 import type { IAccount, IOauth, IProfile } from '@/types/interfaces/interfaceAccount';
 
-class AccountRepository {
+export class AccountRepository {
    createAccount = async (newAccount: IAccount): Promise<any> => {
       try {
-         const guestRole = ListRole.find((role) => role.role_name === 'guest');
+         const guestRole = getRoleList().find((role) => role.role_name === 'guest');
          if (!guestRole) {
             throw new Error('Không tìm thấy Role ID tương ứng!');
          }
@@ -161,6 +161,31 @@ class AccountRepository {
          throw new DatabaseError(`Không thể kiểm tra email: ${email}`);
       }
    };
+
+   getListUserToDashboard = async (lastUserId: string | number, status: string): Promise<any> => {
+      try {
+         const queryGetAccount = `
+            Select ac.ac_id, username, full_name as fullname, email, phone, avatar_url as avatar, status, ac.created_at, (
+               Select role_name
+               From account_roles ar
+               Join roles r on r.role_id = ar.role_id
+               Where ar.ac_id = ac.ac_id
+               Order By r.priority Desc Limit 1
+            ) as role
+            From accounts ac
+            Join account_profiles ap on ap.ac_id = ac.ac_id
+            Where status = ? and (? = '' or ac.ac_id > ?)
+            Order By ac_id Asc
+            Limit 10
+         `;
+
+         const result = await executeQuery(queryGetAccount, [status, lastUserId, lastUserId]);
+
+         return result;
+      } catch (error: any) {
+         throw new DatabaseError(`Xảy ra lỗi khi lấy Profile tài khoản: ${lastUserId}`);
+      }
+   };
 }
 
 export class ProfileRepository {
@@ -268,5 +293,3 @@ export class OauthRepository {
       }
    };
 }
-
-export default AccountRepository;

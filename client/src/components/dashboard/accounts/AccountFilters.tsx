@@ -13,18 +13,8 @@ import { Input } from '@/components/ui/input';
 import { useAccountFilters } from '@/hooks/useAccountFilters';
 
 export default function AccountFilters() {
-   const {
-      search,
-      status,
-      role,
-      dateRange,
-      setSearch,
-      setStatus,
-      setRole,
-      setDateRange,
-      handleReset,
-      handleExport,
-   } = useAccountFilters();
+   const { search, status, role, setSearch, setStatus, setRole, handleReset, handleExport } =
+      useAccountFilters();
 
    return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -45,11 +35,10 @@ export default function AccountFilters() {
             {/* Filters */}
             <div className="flex flex-wrap gap-3">
                <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger className="w-35 border-gray-300">
+                  <SelectTrigger className="w-50 border-gray-300">
                      <SelectValue placeholder="Trạng thái" />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                     <SelectItem value="all">Tất cả</SelectItem>
                      <SelectItem value="active">Đang hoạt động</SelectItem>
                      <SelectItem value="inactive">Không hoạt động</SelectItem>
                      <SelectItem value="pending">Chờ xác thực</SelectItem>
@@ -57,7 +46,7 @@ export default function AccountFilters() {
                </Select>
 
                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger className="w-35 border-gray-300">
+                  <SelectTrigger className="w-50 border-gray-300">
                      <SelectValue placeholder="Vai trò" />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -65,19 +54,6 @@ export default function AccountFilters() {
                      <SelectItem value="admin">Quản trị viên</SelectItem>
                      <SelectItem value="user">Người dùng</SelectItem>
                      <SelectItem value="moderator">Điều hành viên</SelectItem>
-                  </SelectContent>
-               </Select>
-
-               <Select value={dateRange} onValueChange={setDateRange}>
-                  <SelectTrigger className="w-40 border-gray-300">
-                     <SelectValue placeholder="Thời gian" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                     <SelectItem value="today">Hôm nay</SelectItem>
-                     <SelectItem value="week">Tuần này</SelectItem>
-                     <SelectItem value="month">Tháng này</SelectItem>
-                     <SelectItem value="year">Năm nay</SelectItem>
-                     <SelectItem value="all">Tất cả thời gian</SelectItem>
                   </SelectContent>
                </Select>
 

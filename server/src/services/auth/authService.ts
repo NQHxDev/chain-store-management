@@ -9,11 +9,11 @@ import type {
 } from '@/types/interfaces/interfaceAccount';
 
 import { ValidationError, AuthError, ForbiddenError } from '@/appError';
-import RepoAccount, { OauthRepository, ProfileRepository } from '@/repositories/repoAccount';
+import { OauthRepository, ProfileRepository, AccountRepository } from '@/repositories/repoAccount';
 import type { DeviceInfo } from '@/types/interfaces/interfaceToken';
 import SecurityService from '@/services/auth/securityService';
 
-const repoAccount = new RepoAccount();
+const repoAccount = new AccountRepository();
 const repoProfile = new ProfileRepository();
 const repoOauth = new OauthRepository();
 
@@ -112,7 +112,7 @@ class AuthService {
             userId: account.ac_id,
             username: account.username,
             email: account.email,
-            roles: role_account.role_id,
+            roles: role_account.map((r: any) => r.role_id),
          },
          deviceInfo,
          {
@@ -204,7 +204,7 @@ class AuthService {
             userId: account.ac_id,
             username: account.username,
             email: account.email,
-            roles: role_account.role_id,
+            roles: role_account.map((r: any) => r.role_id),
          },
          deviceInfo,
          {

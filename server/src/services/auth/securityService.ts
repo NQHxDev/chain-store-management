@@ -19,7 +19,9 @@ import type {
    RefreshResult,
 } from '../../types/interfaces/interfaceToken';
 import { AppError, ValidationError } from '@/appError';
-import AccountRepository from '@/repositories/repoAccount';
+import { AccountRepository } from '@/repositories/repoAccount';
+import { IRole } from '@/types/interfaces/interfaceAccount';
+import { getRoleList } from '@/mainLoader';
 
 class SecurityService {
    private static readonly ACCESS_TOKEN_SECRET =
@@ -298,6 +300,19 @@ class SecurityService {
          role: role_account,
       };
    }
+
+   static hasAnyRole = (userRoleIds: number[] | IRole[]): boolean => {
+      if (!userRoleIds || userRoleIds.length === 0) return false;
+
+      const managementRoleIds = new Set(
+         getRoleList()
+            .filter((role) => role.role_name === 'admin' || role.role_name === 'manager')
+            .map((role) => role.role_id)
+      );
+
+      const inputIds = userRoleIds.map((r) => (typeof r === 'number' ? r : r.role_id));
+      return inputIds.some((id) => managementRoleIds.has(id));
+   };
 }
 
 export default SecurityService;

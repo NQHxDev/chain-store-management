@@ -1,10 +1,9 @@
-import jwt from 'jsonwebtoken';
 import { body, param, query, validationResult } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 
 import { AuthError, ValidationError } from '@/appError';
 import SecurityService from '@/services/auth/securityService';
-import type { AuthRequest } from '@/types/interfaces/interfaceAccount';
+import type { AuthRequest, IRole } from '@/types/interfaces/interfaceAccount';
 
 class AuthValidator {
    static login() {
@@ -206,14 +205,6 @@ class AuthValidator {
       ];
    }
 
-   static refreshToken() {
-      return [
-         body('refreshToken').trim().notEmpty().withMessage('Refresh token là bắt buộc'),
-
-         AuthValidator.handleValidation,
-      ];
-   }
-
    static handleValidation(req: Request, res: Response, next: NextFunction) {
       const errors = validationResult(req);
 
@@ -247,22 +238,35 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       const authHeader = req.headers.authorization;
 
       if (!authHeader?.startsWith('Bearer ')) {
-         throw new AuthError('Thiếu Access Token!');
+         return next(new AuthError('Thiếu Access Token!'));
       }
 
       const accessToken = authHeader.split(' ')[1];
-
       const { isValid, payload } = await SecurityService.verifyAccessToken(accessToken);
 
-      if (!isValid) {
-         throw new ValidationError('Access Token hết hạn hoặc không đúng!');
+      if (!isValid || !payload) {
+         return next(new ValidationError('Access Token hết hạn hoặc không đúng!'));
       }
 
-      req.user = { userId: payload.userId };
+      req.user = {
+         userId: payload.userId,
+         roles: payload.roles as unknown as IRole[],
+      };
+
       next();
    } catch (err) {
-      next(new AuthError('Token không hợp lệ hoặc đã hết hạn'));
+      next(err instanceof AuthError ? err : new AuthError('Token không hợp lệ hoặc đã hết hạn'));
    }
+};
+
+export const checkRoleManagement = (req: AuthRequest, res: Response, next: NextFunction) => {
+   const user = req.user;
+
+   if (!user || !user.roles || !SecurityService.hasAnyRole(user.roles)) {
+      return next(new AuthError('Bạn không có quyền truy cập vào tính năng này!'));
+   }
+
+   next();
 };
 
 export default AuthValidator;

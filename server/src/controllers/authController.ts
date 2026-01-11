@@ -97,7 +97,7 @@ class AuthController {
             const storedSession = await redisService.get<StoredRefreshToken>(sessionKey);
 
             if (storedSession) {
-               // Xóa khỏi user sessions
+               // Xóa user sessions khỏi Redis
                const userSessionsKey = `user_sessions:${storedSession.userId}`;
                await redisService.srem(userSessionsKey, sessionId);
             }
