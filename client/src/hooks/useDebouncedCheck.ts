@@ -2,7 +2,12 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import axiosClient from '@/lib/axios';
 import axios from 'axios';
 
-export function useDebouncedCheck(value: string, apiUrl: string, delay: number = 500) {
+export function useDebouncedCheck(
+   value: string,
+   apiUrl: string,
+   delay: number = 500,
+   shouldCheck: boolean = true
+) {
    const [available, setAvailable] = useState<boolean | null>(null);
    const [checking, setChecking] = useState(false);
 
@@ -10,9 +15,10 @@ export function useDebouncedCheck(value: string, apiUrl: string, delay: number =
 
    useEffect(() => {
       const trimmedValue = value.trim();
-      if (!trimmedValue) {
+      if (!trimmedValue || !shouldCheck) {
          setAvailable(null);
          setChecking(false);
+         lastCheckedValueRef.current = null;
          return;
       }
 
@@ -46,7 +52,7 @@ export function useDebouncedCheck(value: string, apiUrl: string, delay: number =
          clearTimeout(timeoutId);
          controller.abort();
       };
-   }, [value, apiUrl, delay]);
+   }, [value, apiUrl, delay, shouldCheck]);
 
    const reset = useCallback(() => {
       setAvailable(null);

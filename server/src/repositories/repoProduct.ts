@@ -20,12 +20,6 @@ export class BrandRepository {
 
          return result;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [newBrand.brand_id, newBrand.brand_name],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi thêm Brand: ${newBrand.brand_name}`);
       }
    };

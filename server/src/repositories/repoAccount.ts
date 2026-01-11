@@ -37,16 +37,14 @@ class AccountRepository {
                connection
             );
 
+            const queryInertProfile = 'Insert into account_profiles (ac_id) Values (?)';
+
+            await executeQuery(queryInertProfile, [newAccount.ac_id], connection);
+
             return { success: true, ac_id: newAccount.ac_id };
          });
          return result;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [newAccount.username, newAccount.email],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi tạo tài khoản: ${newAccount.username}`);
       }
    };
@@ -66,12 +64,6 @@ class AccountRepository {
 
          return { account, role_account };
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [identifier],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi lấy thông tin tài khoản: ${identifier}`);
       }
    };
@@ -91,12 +83,6 @@ class AccountRepository {
 
          return { account, role_account };
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [accountID],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi lấy thông tin tài khoản: ${accountID}`);
       }
    };
@@ -116,12 +102,6 @@ class AccountRepository {
 
          return { account, role_account };
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [email],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi lấy thông tin tài khoản: ${email}`);
       }
    };
@@ -137,12 +117,6 @@ class AccountRepository {
 
          return rows[0] as { ac_id: string | number };
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [oauthID],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi lấy thông tin tài khoản: ${oauthID}`);
       }
    };
@@ -162,12 +136,6 @@ class AccountRepository {
 
          return { infoAccount, role_account };
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [accountID],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi lấy thông tin tài khoản: ${accountID}`);
       }
    };
@@ -179,12 +147,6 @@ class AccountRepository {
 
          return result.length > 0;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [username],
-         });
          throw new DatabaseError(`Không thể kiểm tra username: ${username}`);
       }
    };
@@ -196,39 +158,70 @@ class AccountRepository {
 
          return result.length > 0;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [email],
-         });
          throw new DatabaseError(`Không thể kiểm tra email: ${email}`);
       }
    };
 }
 
 export class ProfileRepository {
+   existsProfileByID = async (accountID: string | number): Promise<boolean> => {
+      try {
+         const queryCheck = 'Select 1 from account_profiles Where ac_id = ? Limit 1';
+         const result = await executeQuery(queryCheck, [accountID]);
+
+         return result.length > 0;
+      } catch (error: any) {
+         throw new DatabaseError(`Không thể kiểm tra Profile ID: ${accountID}`);
+      }
+   };
+
    createProfile = async (newProfile: IProfile): Promise<any> => {
       try {
-         const queryInertProfile =
-            'Insert into account_profiles (ac_id, full_name, avatar_url) Values (?, ?, ?)';
+         const isExisting = await this.existsProfileByID(newProfile.ac_id);
+
+         if (isExisting) {
+            const queryUpdateProfile = `Update account_profiles
+               Set full_name = ?,
+                  phone = ?,
+                  avatar_url = ?,
+                  birth_date = ?,
+                  address = ?,
+                  gender = ?
+               Where ac_id = ?
+            `;
+
+            const result = await executeQuery(queryUpdateProfile, [
+               newProfile.full_name || null,
+               newProfile.phone || null,
+               newProfile.avatar_url || null,
+               newProfile.birth_date || null,
+               newProfile.address || null,
+               newProfile.gender || 'unknown',
+               newProfile.ac_id,
+            ]);
+
+            return result;
+         }
+
+         const queryInertProfile = `
+            Insert into account_profiles (ac_id, full_name, phone, avatar_url, birth_date, address, gender)
+            Values (?, ?, ?, ?, ?, ?, ?)
+         `;
 
          const result = await executeQuery(queryInertProfile, [
             newProfile.ac_id,
-            newProfile.full_name,
-            newProfile.avatar_url,
+            newProfile.full_name || null,
+            newProfile.phone || null,
+            newProfile.avatar_url || null,
+            newProfile.birth_date || null,
+            newProfile.address || null,
+            newProfile.gender || 'unknown',
          ]);
 
          return result;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [newProfile.ac_id, newProfile.full_name],
-         });
          throw new DatabaseError(
-            `Xảy ra lỗi khi tạo thông tin tài khoản của: ${newProfile.full_name}`
+            `Xảy ra lỗi khi xử lý thông tin tài khoản của: ${newProfile.full_name}`
          );
       }
    };
@@ -251,12 +244,6 @@ export class ProfileRepository {
 
          return profileUser;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [userId],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi lấy Profile tài khoản: ${userId}`);
       }
    };
@@ -277,12 +264,6 @@ export class OauthRepository {
 
          return result;
       } catch (error: any) {
-         console.error('Database Error Details:', {
-            message: error.message,
-            code: error.code,
-            sql: error.sql,
-            parameters: [newOauth.ac_id, newOauth.provider_user_id],
-         });
          throw new DatabaseError(`Xảy ra lỗi khi tạo Oauth tài khoản: ${newOauth.ac_id}`);
       }
    };

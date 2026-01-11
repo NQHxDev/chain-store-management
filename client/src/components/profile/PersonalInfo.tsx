@@ -9,8 +9,7 @@ import {
    SelectTrigger,
    SelectValue,
 } from '@/components/ui/select';
-import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { CalendarRangeIcon } from 'lucide-react';
 import { UserProfile } from '@/lib/account/Profile';
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -18,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { Account } from '@/lib/account/Account';
+import { cn } from '@/lib/utils';
 
 interface PersonalInfoProps {
    profile: UserProfile | null;
@@ -49,7 +49,7 @@ export default function PersonalInfo({ profile, account }: PersonalInfoProps) {
                   <SelectTrigger className="border-gray-300 focus:border-gray-900 focus:ring-gray-900">
                      <SelectValue placeholder="Chọn giới tính" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper">
                      <SelectItem value="male">Nam</SelectItem>
                      <SelectItem value="female">Nữ</SelectItem>
                      <SelectItem value="unknown">Khác</SelectItem>
@@ -58,28 +58,32 @@ export default function PersonalInfo({ profile, account }: PersonalInfoProps) {
             </div>
 
             <div className="space-y-2">
-               <Label htmlFor="dob" className="text-gray-700">
+               <Label htmlFor="date" className="text-gray-700">
                   Ngày sinh
                </Label>
                <Popover>
                   <PopoverTrigger asChild>
                      <Button
                         variant="outline"
+                        id="date"
                         className={cn(
-                           'w-full justify-start text-left font-normal border-gray-300',
+                           'w-full justify-between items-center text-left font-normal border-gray-300', // Changed justify-start to justify-between
                            !dateOfBirth && 'text-gray-500'
                         )}
                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateOfBirth ? format(dateOfBirth, 'dd/MM/yyyy') : 'Chọn ngày sinh'}
+                        <span className={!dateOfBirth ? 'text-gray-500' : 'text-gray-900'}>
+                           {dateOfBirth ? format(dateOfBirth, 'dd/MM/yyyy') : 'Chọn ngày sinh'}
+                        </span>
+                        <CalendarRangeIcon className="h-4 w-4 text-gray-500" />
                      </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
+                  <PopoverContent className="w-auto p-0" align="start">
                      <Calendar
                         mode="single"
                         selected={dateOfBirth}
+                        captionLayout="dropdown"
                         onSelect={setDateOfBirth}
-                        initialFocus
+                        disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                      />
                   </PopoverContent>
                </Popover>

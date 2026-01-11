@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import type { Request, Response, NextFunction } from 'express';
 
+import { appLogger } from '@/appLogger';
+
 dotenv.config({
    quiet: true,
    override: false,
@@ -8,38 +10,47 @@ dotenv.config({
 
 import { AppError } from '@/appError';
 
-export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
-   console.error('[*] Error:', {
-      path: req.path,
-      method: req.method,
-      body: req.body,
-      query: req.query,
-      error: {
-         name: error.name,
-         message: error.message,
-         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      },
-      timestamp: new Date().toISOString(),
-   });
+export const errorHandler = (err: Error, req, res, next) => {
+   const isAppError = err instanceof AppError;
 
-   if (error instanceof AppError) {
-      return res.status(error.statusCode).json({
+   const logPayload = {
+      request: {
+         method: req.method,
+         path: req.originalUrl,
+         ip: req.ip,
+         requestId: req.id,
+      },
+      error: {
+         name: err.name,
+         message: err.message,
+         stack: isAppError && err.isOperational ? undefined : err.stack,
+         context: isAppError ? err.context : undefined,
+         cause: isAppError ? err.cause : undefined,
+      },
+   };
+
+   if (!isAppError || !err.isOperational) {
+      appLogger.fatal(logPayload, 'Unhandled exception');
+   } else {
+      appLogger.error(logPayload, 'Operational error');
+   }
+
+   if (isAppError) {
+      return res.status(err.statusCode).json({
          success: false,
          error: {
-            code: error.statusCode,
-            message: error.message,
-            type: error.constructor.name,
+            code: err.statusCode,
+            message: err.message,
+            type: err.constructor.name,
          },
       });
    }
 
-   // Lỗi không mong đợi
    return res.status(500).json({
       success: false,
       error: {
          code: 500,
-         message: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message,
-         type: 'InternalServerError',
+         message: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
       },
    });
 };

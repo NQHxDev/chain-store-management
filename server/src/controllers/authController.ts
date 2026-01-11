@@ -12,7 +12,7 @@ import type { AuthRequest, LoginRequestBody } from '@/types/interfaces/interface
 import type { DeviceInfo, StoredRefreshToken } from '@/types/interfaces/interfaceToken';
 
 import AuthService from '@/services/auth/authService';
-import { AuthError, ValidationError } from '@/appError';
+import { AppError, AuthError, ValidationError } from '@/appError';
 import SecurityService from '@/services/auth/securityService';
 import redisService from '@/services/redisService';
 import googleClient from '@/configs/cfgGoogleClient';
@@ -252,7 +252,11 @@ class AuthController {
 
          res.redirect(`/oauth/callback?accessToken=${result.tokens.accessToken}`);
       } catch (err) {
-         next(err);
+         const message = err instanceof AppError ? err.message : 'Đăng nhập Google thất bại';
+
+         const redirectUrl = `/oauth/callback?error=${encodeURIComponent(message)}`;
+
+         return res.redirect(302, redirectUrl);
       }
    };
 }

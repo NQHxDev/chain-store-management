@@ -65,7 +65,7 @@ export default function HeaderAuth() {
                </div>
                <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="cursor-pointer">
-                     <span>Quản lý hệ thống</span>
+                     <span>Quản lý dịch vụ</span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                      <DropdownMenuSubContent className="min-w-45">
@@ -86,6 +86,26 @@ export default function HeaderAuth() {
                   </DropdownMenuPortal>
                </DropdownMenuSub>
                <DropdownMenuItem className="cursor-pointer">Cài đặt chung</DropdownMenuItem>
+               {hasAnyRole(account.roles, ['admin']) && (
+                  <DropdownMenuSub>
+                     <DropdownMenuSubTrigger className="cursor-pointer">
+                        <span>Quản lý hệ thống</span>
+                     </DropdownMenuSubTrigger>
+                     <DropdownMenuPortal>
+                        <DropdownMenuSubContent className="min-w-45">
+                           <DropdownMenuItem asChild className="cursor-pointer">
+                              <Link href="#">Danh sách User</Link>
+                           </DropdownMenuItem>
+                           <DropdownMenuItem asChild className="cursor-pointer">
+                              <Link href="#">Quyền hạn</Link>
+                           </DropdownMenuItem>
+                           <DropdownMenuItem asChild className="cursor-pointer">
+                              <Link href="#">Các nhãn hàng</Link>
+                           </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                     </DropdownMenuPortal>
+                  </DropdownMenuSub>
+               )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
          </>

@@ -11,7 +11,6 @@ export interface IAccount {
    username: string;
    password_hash?: string | null;
    email: string;
-   phone?: string | number;
    status?: string;
 }
 
@@ -21,6 +20,7 @@ export interface IProfile {
    phone?: string;
    avatar_url?: string;
    birth_date?: Date;
+   address?: string;
    gender?: string;
 }
 

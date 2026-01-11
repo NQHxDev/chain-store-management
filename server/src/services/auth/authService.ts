@@ -6,7 +6,6 @@ import type {
    IAccount,
    IProfile,
    IOauth,
-   IRole,
 } from '@/types/interfaces/interfaceAccount';
 
 import { ValidationError, AuthError, ForbiddenError } from '@/appError';
@@ -147,7 +146,7 @@ class AuthService {
    ) => {
       const oauth = await repoAccount.findByProvider('google', payload.sub);
 
-      let account: IAccount, role_account;
+      let account: IAccount, role_account: any;
 
       if (oauth) {
          const result = await repoAccount.findByID(oauth.ac_id);

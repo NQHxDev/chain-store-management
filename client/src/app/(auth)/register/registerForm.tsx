@@ -78,12 +78,16 @@ export default function RegisterForm(): JSX.Element {
 
    const { available: emailAvailable, checking: emailChecking } = useDebouncedCheck(
       email,
-      '/auth/check-identifier'
+      '/auth/check-identifier',
+      500,
+      !validateEmail(email)
    );
 
    const { available: usernameAvailable, checking: usernameChecking } = useDebouncedCheck(
       username,
-      '/auth/check-identifier'
+      '/auth/check-identifier',
+      500,
+      !validateUsername(username)
    );
 
    const emailError = emailTouched ? validateEmail(email) : null;
@@ -281,6 +285,7 @@ export default function RegisterForm(): JSX.Element {
                />
                <button
                   type="button"
+                  tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                >
@@ -328,6 +333,7 @@ export default function RegisterForm(): JSX.Element {
                />
                <button
                   type="button"
+                  tabIndex={-1}
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                >
@@ -354,6 +360,7 @@ export default function RegisterForm(): JSX.Element {
                   <Link
                      href="/terms"
                      target="_blank"
+                     tabIndex={-1}
                      className="font-medium text-foreground underline underline-offset-4"
                   >
                      Điều khoản
@@ -362,6 +369,7 @@ export default function RegisterForm(): JSX.Element {
                   <Link
                      href="/privacy"
                      target="_blank"
+                     tabIndex={-1}
                      className="font-medium text-foreground underline underline-offset-4"
                   >
                      Chính sách bảo mật
