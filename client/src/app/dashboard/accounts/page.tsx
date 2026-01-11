@@ -1,6 +1,5 @@
-import AccountFilters from '@/components/dashboard/accounts/AccountFilters';
+import AccountsClient from '@/components/dashboard/accounts/AccountsClient';
 import AccountStats from '@/components/dashboard/accounts/AccountStats';
-import UserTable from '@/components/dashboard/accounts/UserTable';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -24,15 +23,8 @@ export default function AccountManagementPage() {
             {/* Stats Cards */}
             <AccountStats />
 
-            {/* Filters and Search */}
-            <div className="mt-8">
-               <AccountFilters />
-            </div>
-
-            {/* Users Table */}
-            <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-               <UserTable />
-            </div>
+            {/* Client Boundary */}
+            <AccountsClient />
          </div>
       </div>
    );

@@ -25,15 +25,22 @@ import { useUsers } from '@/hooks/useAccount';
 import { DashboardUser } from '@/lib/account/Account';
 import { formatDate } from '@/lib/utils/formatters';
 
-export default function UserTable() {
+interface UserTableProps {
+   search: string;
+   status: string;
+   role: string;
+}
+
+export default function UserTable({ search, status, role }: UserTableProps) {
    const [selectedUser, setSelectedUser] = useState<DashboardUser | null>(null);
    const [isFormOpen, setIsFormOpen] = useState(false);
    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-   const [currentPage, setCurrentPage] = useState(1);
 
-   const { users, hasNextPage, isLoading } = useUsers({
-      page: currentPage,
+   const { users, isLoading, page, hasNextPage, nextPage, prevPage } = useUsers({
       limit: 10,
+      search,
+      status,
+      role,
    });
 
    const handleEdit = (user: DashboardUser) => {
@@ -101,7 +108,7 @@ export default function UserTable() {
 
    return (
       <>
-         <div className="overflow-x-auto">
+         <div className="overflow-x-auto min-h-162 flex flex-col">
             <Table>
                <TableHeader>
                   <TableRow className="bg-gray-50 hover:bg-gray-50">
@@ -131,7 +138,9 @@ export default function UserTable() {
                                     />
                                  ) : (
                                     <span className="font-semibold text-gray-700">
-                                       {user.fullname.charAt(0).toUpperCase()}
+                                       {(user.fullname || user.username || '?')
+                                          .charAt(0)
+                                          .toUpperCase()}
                                     </span>
                                  )}
                               </div>
@@ -198,42 +207,32 @@ export default function UserTable() {
                   ))}
                </TableBody>
             </Table>
+
+            {/* Empty State */}
+            {users.length === 0 && !isLoading && (
+               <div className="text-center py-12">
+                  <div className="text-gray-400 mb-4">Không có người dùng nào</div>
+                  <Button variant="outline" onClick={() => setIsFormOpen(true)}>
+                     Thêm người dùng mới
+                  </Button>
+               </div>
+            )}
          </div>
 
          {/* Pagination */}
          <div className="border-t border-gray-200 px-6 py-4 flex justify-center">
             <div className="flex items-center gap-3">
-               <Button
-                  variant="outline"
-                  disabled={currentPage === 1 || isLoading}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-               >
-                  ← Quay lại
+               <Button variant="outline" disabled={page === 1 || isLoading} onClick={prevPage}>
+                  ← Trước
                </Button>
 
-               <span className="px-4 py-2 text-sm font-medium border rounded">
-                  Trang {currentPage}
-               </span>
+               <span className="px-4 py-2 text-sm font-medium border rounded">Trang {page}</span>
 
-               <Button
-                  variant="outline"
-                  disabled={!hasNextPage || isLoading}
-                  onClick={() => setCurrentPage((p) => p + 1)}
-               >
-                  Tiếp →
+               <Button variant="outline" disabled={!hasNextPage || isLoading} onClick={nextPage}>
+                  Sau →
                </Button>
             </div>
          </div>
-
-         {/* Empty State */}
-         {users.length === 0 && !isLoading && (
-            <div className="text-center py-12">
-               <div className="text-gray-400 mb-4">Không có người dùng nào</div>
-               <Button variant="outline" onClick={() => setIsFormOpen(true)}>
-                  Thêm người dùng mới
-               </Button>
-            </div>
-         )}
 
          {/* Loading State */}
          {isLoading && (

@@ -1,6 +1,11 @@
 import axiosClient from '@/lib/axios';
 
 export const MgrService = {
-   getListUser: (data: { lastUserId: string | number; status: string }) =>
-      axiosClient.get('/mgr/get-list-users', { params: data }),
+   getListUser: (params: {
+      lastUserId?: string | number;
+      limit: number;
+      search?: string;
+      status?: string;
+      role?: string;
+   }) => axiosClient.get('/mgr/get-list-users', { params }),
 };

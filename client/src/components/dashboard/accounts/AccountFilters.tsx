@@ -10,12 +10,28 @@ import {
    SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { useAccountFilters } from '@/hooks/useAccountFilters';
 
-export default function AccountFilters() {
-   const { search, status, role, setSearch, setStatus, setRole, handleReset, handleExport } =
-      useAccountFilters();
+interface AccountFiltersProps {
+   search: string;
+   status: string;
+   role: string;
+   setSearch: (v: string) => void;
+   setStatus: (v: string) => void;
+   setRole: (v: string) => void;
+   handleReset: () => void;
+   handleExport: () => void;
+}
 
+export default function AccountFilters({
+   search,
+   status,
+   role,
+   setSearch,
+   setStatus,
+   setRole,
+   handleReset,
+   handleExport,
+}: AccountFiltersProps) {
    return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
          <div className="flex flex-col lg:flex-row gap-4">
