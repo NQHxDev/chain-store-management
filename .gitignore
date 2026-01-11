@@ -21,6 +21,7 @@ build/
 dist/
 scripts/
 .env*
+!.env.example
 
 # misc
 .DS_Store

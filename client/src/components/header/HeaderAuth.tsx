@@ -94,7 +94,7 @@ export default function HeaderAuth() {
                      <DropdownMenuPortal>
                         <DropdownMenuSubContent className="min-w-45">
                            <DropdownMenuItem asChild className="cursor-pointer">
-                              <Link href="#">Danh sách User</Link>
+                              <Link href="/dashboard/accounts">Danh sách User</Link>
                            </DropdownMenuItem>
                            <DropdownMenuItem asChild className="cursor-pointer">
                               <Link href="#">Quyền hạn</Link>
@@ -189,7 +189,11 @@ export default function HeaderAuth() {
                {renderManagerPanel()}
 
                <DropdownMenuItem asChild>
-                  <Link href="#" className="py-1">
+                  <Link
+                     href="https://github.com/NQHxDev/chain-store-management.git"
+                     target="_blank"
+                     className="py-1"
+                  >
                      GitHub
                   </Link>
                </DropdownMenuItem>
