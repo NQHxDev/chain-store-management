@@ -2,12 +2,12 @@ import { useState, useCallback } from 'react';
 
 export function useAccountFilters() {
    const [search, setSearch] = useState('');
-   const [status, setStatus] = useState('active');
+   const [status, setStatus] = useState('all');
    const [role, setRole] = useState('all');
 
    const handleReset = useCallback(() => {
       setSearch('');
-      setStatus('active');
+      setStatus('all');
       setRole('all');
    }, []);
 

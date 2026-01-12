@@ -13,7 +13,7 @@ export async function getUsers({
    limit = 10,
    lastUserId = '',
    search = '',
-   status = 'active',
+   status = '',
    role = '',
 }: GetUsersParams): Promise<{
    users: DashboardUser[];

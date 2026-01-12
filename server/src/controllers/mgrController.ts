@@ -4,10 +4,21 @@ import type { Request, Response, NextFunction } from 'express';
 export class MgrUserController {
    getListUser = async (req: Request, res: Response, next: NextFunction) => {
       try {
-         const status = req.query.status as string;
-         const lastUserId = (req.query.lastUserId as string) || '';
+         const defaultLimit = 10;
+         const maxLimit = 100;
 
-         const listUser = await MgrUserService.getListUser(lastUserId, status);
+         const lastUserId = (req.query.lastUserId as string) || null;
+         let limit = Math.abs(Number.parseInt(req.query.limit as string)) || defaultLimit;
+         const search = (req.query.search as string)?.trim() || '';
+         const status = (req.query.status as string) || 'all';
+         const role = (req.query.role as string) || 'all';
+
+         if (limit > maxLimit) limit = maxLimit;
+
+         // Role: manager_group, staff_group, collaborative_group, customer
+         // 80 - 100, 50 - 70, 30 - 40, 0 - 10
+
+         const listUser = await MgrUserService.getListUser(lastUserId, limit, search, status, role);
 
          res.json({
             success: true,
@@ -16,30 +27,5 @@ export class MgrUserController {
       } catch (err) {
          next(err);
       }
-
-      /*
-      SELECT *
-         FROM accounts
-         WHERE ac_id < '019ba833-5da1-7ec5-9790-242d0c82b562' -- ID cuối cùng trang trước
-         ORDER BY ac_id DESC
-         LIMIT 10;
-
-      -- Index này giúp Database tìm kiếm status và ID mà không cần quét toàn bộ bảng
-         CREATE INDEX idx_status_id ON accounts (status, ac_id DESC);
-
-      Interface:
-         DashboardUser {
-            ac_id: string;
-            username: string;
-            fullname: string;
-            email: string;
-            phone: string;
-            avatar?: string;
-            role: 'admin' | 'user' | 'moderator';
-            status: 'active' | 'inactive' | 'pending';
-
-            created_at: string;
-         }
-      */
    };
 }

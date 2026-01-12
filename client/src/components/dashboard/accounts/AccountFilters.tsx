@@ -55,6 +55,7 @@ export default function AccountFilters({
                      <SelectValue placeholder="Trạng thái" />
                   </SelectTrigger>
                   <SelectContent position="popper">
+                     <SelectItem value="all">Tất cả</SelectItem>
                      <SelectItem value="active">Đang hoạt động</SelectItem>
                      <SelectItem value="inactive">Không hoạt động</SelectItem>
                      <SelectItem value="pending">Chờ xác thực</SelectItem>
@@ -67,9 +68,10 @@ export default function AccountFilters({
                   </SelectTrigger>
                   <SelectContent position="popper">
                      <SelectItem value="all">Tất cả</SelectItem>
-                     <SelectItem value="admin">Quản trị viên</SelectItem>
-                     <SelectItem value="user">Người dùng</SelectItem>
-                     <SelectItem value="moderator">Điều hành viên</SelectItem>
+                     <SelectItem value="manager_group">Ban Quản lý</SelectItem>
+                     <SelectItem value="staff_group">Đội ngũ vận hành</SelectItem>
+                     <SelectItem value="collaborative_group">Đội ngũ hợp tác</SelectItem>
+                     <SelectItem value="customer">Khách hàng</SelectItem>
                   </SelectContent>
                </Select>
 
