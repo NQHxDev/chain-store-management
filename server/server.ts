@@ -8,7 +8,7 @@ dotenv.config({
 
 import { createApp } from './src/app.ts';
 import { initDatabase } from './src/services/databaseService';
-import { initRedis } from './src/services/redisService';
+import { getRedisInstance, initRedis } from './src/services/redisService';
 
 const portServer = Number(process.env.PORT_SV) || 5000;
 const hostServer = process.env.HOST_SV || '127.0.0.1';
@@ -20,10 +20,11 @@ async function startServer() {
 
       await initRedis();
       console.log('[✓] Redis Connected Successfully!');
+      const redisClient = await getRedisInstance();
 
       await loadDataOnBoot();
 
-      const server = await createApp({ hostServer, portServer });
+      const server = await createApp({ hostServer, portServer, redisClient });
 
       server.listen(portServer, hostServer, () => {
          console.log(`\n[>] Server running at http://${hostServer}:${portServer}`);

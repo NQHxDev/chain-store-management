@@ -59,6 +59,7 @@ export default function AccountFilters({
                      <SelectItem value="active">Đang hoạt động</SelectItem>
                      <SelectItem value="inactive">Không hoạt động</SelectItem>
                      <SelectItem value="pending">Chờ xác thực</SelectItem>
+                     <SelectItem value="ban">Khoá tài khoản</SelectItem>
                   </SelectContent>
                </Select>
 

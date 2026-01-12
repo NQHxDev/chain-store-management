@@ -173,61 +173,50 @@ export class AccountRepository {
          const params: any[] = [];
          const whereConditions: string[] = [];
 
-         // 1. Xử lý Status
          if (status !== 'all') {
             whereConditions.push('ac.status = ?');
             params.push(status);
          }
 
-         // 2. Xử lý Phân trang (Cursor)
-         // Quan trọng: Chỉ thêm điều kiện nếu lastUserId thực sự có giá trị
          if (lastUserId && lastUserId !== '' && lastUserId !== 'null') {
             whereConditions.push('ac.ac_id > ?');
             params.push(lastUserId);
          }
 
-         // 3. Xử lý Search
          if (search && search.trim() !== '') {
             whereConditions.push('(ac.username LIKE ? OR ap.full_name LIKE ? OR ac.email LIKE ?)');
             const searchParam = `%${search}%`;
             params.push(searchParam, searchParam, searchParam);
          }
 
-         // 4. Tổng hợp câu WHERE
          const whereClause =
             whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
-         // 5. Xử lý Having cho Role
          let roleCondition = '';
          if (roles && roles.length > 0) {
-            roleCondition = `HAVING role IN (${roles.map(() => '?').join(',')})`;
+            roleCondition = `Having role in (${roles.map(() => '?').join(',')})`;
             params.push(...roles);
          }
 
-         // 6. Limit
-         // const safeLimit = Number.isInteger(+limit) && +limit > 0 ? +limit : 10;
-         // params.push(safeLimit);
-
          const queryGetAccount = `
-         SELECT ac.ac_id, username, ap.full_name as fullname, email, phone, avatar_url as avatar, status, ac.created_at, (
-            SELECT r.role_name
-            FROM account_roles ar
-            JOIN roles r ON r.role_id = ar.role_id
-            WHERE ar.ac_id = ac.ac_id
-            ORDER BY r.priority DESC LIMIT 1
-         ) as role
-         FROM accounts ac
-         JOIN account_profiles ap ON ap.ac_id = ac.ac_id
-         ${whereClause}
-         ${roleCondition}
-         ORDER BY ac.ac_id ASC
-         LIMIT 10
-      `;
+            Select ac.ac_id, username, ap.full_name as fullname, email, phone, avatar_url as avatar, status, ac.created_at, (
+               Select r.role_name
+               From account_roles ar
+               Join roles r on r.role_id = ar.role_id
+               Where ar.ac_id = ac.ac_id
+               Order By r.priority Desc Limit 1
+            ) as role
+            From accounts ac
+            Join account_profiles ap on ap.ac_id = ac.ac_id
+            ${whereClause}
+            ${roleCondition}
+            Order By ac.ac_id Asc
+            Limit 10
+         `;
 
          const result = await executeQuery(queryGetAccount, params);
          return result;
       } catch (error: any) {
-         console.error('Lỗi chi tiết SQL:', error);
          throw new DatabaseError(`Xảy ra lỗi khi lấy Danh sách user: ${error.message}`);
       }
    };

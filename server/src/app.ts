@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import { RedisStore } from 'connect-redis';
 import session from 'express-session';
 import cors from 'cors';
 import next from 'next';
@@ -10,7 +11,7 @@ import crypto from 'crypto';
 import mainRouter from '@/routes/mainRouter';
 import { errorHandler } from '@/middlewares/errorHandler';
 
-export async function createApp({ hostServer, portServer }) {
+export async function createApp({ hostServer, portServer, redisClient }) {
    const isDev = process.env.NODE_ENV !== 'production';
    const server = express();
 
@@ -35,13 +36,22 @@ export async function createApp({ hostServer, portServer }) {
       server.use(
          helmet({
             contentSecurityPolicy: {
-               useDefaults: true,
                directives: {
-                  scriptSrc: ["'self'", (req, res: any) => `'nonce-${res.locals.nonce}'`],
+                  defaultSrc: ["'self'"],
+                  scriptSrc: ["'self'", "'unsafe-inline'"],
                   styleSrc: ["'self'", "'unsafe-inline'"],
                   imgSrc: ["'self'", 'data:', 'blob:'],
                   fontSrc: ["'self'", 'data:'],
-                  connectSrc: ["'self'"],
+                  connectSrc: [
+                     "'self'",
+                     'https://accounts.google.com',
+                     'https://oauth2.googleapis.com',
+                     'https://www.googleapis.com',
+                  ],
+                  objectSrc: ["'none'"],
+                  baseUri: ["'self'"],
+                  frameAncestors: ["'none'"],
+                  upgradeInsecureRequests: [],
                },
             },
          })
@@ -53,8 +63,14 @@ export async function createApp({ hostServer, portServer }) {
    server.use(express.json());
    server.use(express.urlencoded({ extended: true }));
 
+   const redisStore = new RedisStore({
+      client: redisClient,
+      prefix: 'session:',
+   });
+
    server.use(
       session({
+         store: redisStore,
          secret:
             process.env.SESSION_SECRET ||
             '33c6281b4cc5d8399194b47802c5b373297901c768bd12977c471780abc85ab0',
@@ -77,12 +93,13 @@ export async function createApp({ hostServer, portServer }) {
       );
    }
 
+   server.all('/_next/{*splat}', (req, res) => {
+      return handle(req, res);
+   });
+
    server.use('/api', mainRouter);
 
    server.all(/.*/, (req, res) => {
-      return handle(req, res);
-   });
-   server.all('/_next/{*splat}', (req, res) => {
       return handle(req, res);
    });
 

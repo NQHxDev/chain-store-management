@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import UserForm from './UserForm';
-import DeleteConfirmationDialog from './DeleteConfirmationDialog';
+import BanConfirmationDialog from './BanConfirmationDialog';
 import { useUsers } from '@/hooks/useAccount';
 import { DashboardUser } from '@/lib/account/Account';
 import { formatDate } from '@/lib/utils/formatters';
@@ -58,17 +58,16 @@ export default function UserTable({ search, status, role }: UserTableProps) {
       console.log('View user:', user);
    };
 
-   const getStatusColor = (status: string) => {
-      switch (status) {
-         case 'active':
-            return 'bg-green-100 text-green-800';
-         case 'inactive':
-            return 'bg-red-100 text-red-800';
-         case 'pending':
-            return 'bg-yellow-100 text-yellow-800';
-         default:
-            return 'bg-gray-100 text-gray-800';
-      }
+   const getStatusColor = (status: string): string => {
+      const statusMap: Record<string, string> = {
+         active: 'bg-green-100 text-green-800 border-green-200',
+         inactive: 'bg-gray-100 text-gray-800 border-gray-200',
+         pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+         ban: 'bg-red-100 text-red-800 border-red-200',
+         locked: 'bg-orange-100 text-orange-800 border-orange-200',
+      };
+
+      return statusMap[status] || 'bg-slate-100 text-slate-800';
    };
 
    const getRoleColor = (role: string) => {
@@ -90,6 +89,8 @@ export default function UserTable({ search, status, role }: UserTableProps) {
             return 'Không hoạt động';
          case 'pending':
             return 'Chờ xác thực';
+         case 'ban':
+            return 'Đã bị khoá';
          default:
             return 'Không xác định';
       }
@@ -252,7 +253,7 @@ export default function UserTable({ search, status, role }: UserTableProps) {
          />
 
          {/* Delete Confirmation Dialog */}
-         <DeleteConfirmationDialog
+         <BanConfirmationDialog
             isOpen={isDeleteDialogOpen}
             onClose={() => {
                setIsDeleteDialogOpen(false);

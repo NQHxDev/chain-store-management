@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { DashboardUser } from '@/lib/account/Account';
 
-interface DeleteConfirmationDialogProps {
+interface BanConfirmationDialogProps {
    isOpen: boolean;
    onClose: () => void;
    user: DashboardUser | null;
@@ -22,7 +22,7 @@ export default function DeleteConfirmationDialog({
    isOpen,
    onClose,
    user,
-}: DeleteConfirmationDialogProps) {
+}: BanConfirmationDialogProps) {
    const handleDelete = async () => {
       if (user) {
          // Call API to delete user
@@ -39,12 +39,11 @@ export default function DeleteConfirmationDialog({
                   <AlertTriangle className="h-6 w-6 text-red-600" />
                </div>
                <DialogTitle className="text-center text-xl font-bold text-gray-900 mt-4">
-                  Xác nhận xóa
+                  Xác nhận Ban tài khoản
                </DialogTitle>
                <DialogDescription className="text-center text-gray-600">
-                  Bạn có chắc chắn muốn xóa tài khoản{' '}
-                  <span className="font-semibold text-gray-900">{user?.username}</span>? Hành động
-                  này không thể hoàn tác.
+                  Bạn có chắc chắn muốn Ban tài khoản{' '}
+                  <span className="font-semibold text-gray-900">{user?.username}</span>!
                </DialogDescription>
             </DialogHeader>
 
@@ -73,7 +72,7 @@ export default function DeleteConfirmationDialog({
                   onClick={handleDelete}
                   className="flex-1 bg-red-600 hover:bg-red-700"
                >
-                  Xóa tài khoản
+                  Ban tài khoản
                </Button>
             </DialogFooter>
          </DialogContent>

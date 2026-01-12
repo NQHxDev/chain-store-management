@@ -95,13 +95,11 @@ export const initRedis = async (options?: RedisOptions): Promise<RedisType | Clu
 export const getRedisInstance = async (): Promise<RedisType | Cluster> => {
    try {
       if (redisConnect.instance && redisConnect.status === REDIS_STATUS.CONNECTED) {
-         // Kiểm tra connection còn sống không
          try {
             await redisConnect.instance.ping();
             redisConnect.lastPing = new Date();
             return redisConnect.instance;
          } catch {
-            // Nếu ping failed, reset và tạo mới
             redisConnect.status = REDIS_STATUS.DISCONNECT;
             redisConnect.instance = null;
          }
@@ -134,7 +132,6 @@ export const executeRedisCommand = async <T = any>(command: string, ...args: any
 
          try {
             const newRedis = await initRedis();
-            // @ts-ignore: Retry command
             return await newRedis[command](...args);
          } catch (retryError) {
             throw new Error(
