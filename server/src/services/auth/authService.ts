@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { uuidv7 } from 'uuidv7';
 
 import type {
-   IAccountRequest,
+   IAuthRegisterRequest,
    IAccount,
    IProfile,
    IOauth,
@@ -20,7 +20,7 @@ const repoOauth = new OauthRepository();
 const timeOneDay = 24 * 60 * 60 * 1000;
 
 class AuthService {
-   static register = async (data: IAccountRequest, deviceInfo?: DeviceInfo) => {
+   static register = async (data: IAuthRegisterRequest, deviceInfo?: DeviceInfo) => {
       const isUsernameExists = await repoAccount.existsByUsername(data.username);
       if (isUsernameExists) {
          throw new ValidationError('Username đã tồn tại!');

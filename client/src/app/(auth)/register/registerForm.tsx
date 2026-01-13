@@ -363,16 +363,7 @@ export default function RegisterForm(): JSX.Element {
                      tabIndex={-1}
                      className="font-medium text-foreground underline underline-offset-4"
                   >
-                     Điều khoản
-                  </Link>{' '}
-                  và{' '}
-                  <Link
-                     href="/privacy"
-                     target="_blank"
-                     tabIndex={-1}
-                     className="font-medium text-foreground underline underline-offset-4"
-                  >
-                     Chính sách bảo mật
+                     Điều khoản dịch vụ
                   </Link>
                </Label>
             </div>

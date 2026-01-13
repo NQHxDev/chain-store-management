@@ -215,6 +215,7 @@ export class AccountRepository {
          `;
 
          const result = await executeQuery(queryGetAccount, params);
+
          return result;
       } catch (error: any) {
          throw new DatabaseError(`Xảy ra lỗi khi lấy Danh sách user: ${error.message}`);

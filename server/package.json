@@ -31,7 +31,8 @@
       "next": "16.1.1",
       "react": "19.2.3",
       "react-dom": "19.2.3",
-      "uuidv7": "1.1.0"
+      "uuidv7": "1.1.0",
+      "winston": "3.19.0"
    },
    "devDependencies": {
       "@faker-js/faker": "^10.2.0",

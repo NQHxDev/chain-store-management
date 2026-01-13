@@ -1,4 +1,6 @@
 import HeaderAuth from '@/components/header/HeaderAuth';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Home, ShoppingBag, Info, PhoneCall, Menu, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
@@ -85,7 +87,75 @@ export default function Header() {
                      </Link>
                   </nav>
 
-                  <HeaderAuth />
+                  <div className="hidden md:block">
+                     <HeaderAuth />
+                  </div>
+
+                  <div className="md:hidden">
+                     <Sheet>
+                        <SheetTrigger asChild>
+                           <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                              <Menu className="h-6 w-5 text-gray-700" />
+                           </button>
+                        </SheetTrigger>
+                        <SheetContent side="right" className="w-[200px] sm:w-[350px] px-0">
+                           <SheetHeader className="px-6 pb-6 border-b">
+                              <SheetTitle className="text-left text-xl font-bold">
+                                 Zeion<span className="text-neutral-500">Store</span>
+                              </SheetTitle>
+                           </SheetHeader>
+
+                           <nav className="flex flex-col mt-4">
+                              {[
+                                 { name: 'Trang chủ', href: '/', icon: Home },
+                                 { name: 'Sản phẩm', href: '/products', icon: ShoppingBag },
+                                 { name: 'Giới thiệu', href: '/introduce', icon: Info },
+                                 { name: 'Liên hệ', href: '/contact', icon: PhoneCall },
+                              ].map((item) => (
+                                 <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className="flex items-center justify-between px-6 py-4 text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all border-b border-gray-50 group"
+                                 >
+                                    <div className="flex items-center gap-4">
+                                       <item.icon className="w-5 h-5 text-gray-500 group-hover:text-black" />
+                                       <span className="font-medium text-[15px]">{item.name}</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                                 </Link>
+                              ))}
+                              {/* <Link
+                                 href="/login"
+                                 className="flex items-center justify-between px-6 py-4 text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all border-b border-gray-50 group"
+                              >
+                                 <div className="flex items-center gap-4">
+                                    <LogIn className="w-5 h-5 text-gray-500 group-hover:text-black" />
+                                    <span className="font-medium text-[15px]">Đăng nhập</span>
+                                 </div>
+                                 <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                              </Link>
+                              <Link
+                                 href="/register"
+                                 className="flex items-center justify-between px-6 py-4 text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all border-b border-gray-50 group"
+                              >
+                                 <div className="flex items-center gap-4">
+                                    <UserPlus className="w-5 h-5 text-gray-500 group-hover:text-black" />
+                                    <span className="font-medium text-[15px]">Đăng ký</span>
+                                 </div>
+                                 <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                              </Link> */}
+                           </nav>
+
+                           {/* Phần thông tin bổ sung ở dưới cùng menu */}
+                           <div className="absolute bottom-10 left-0 w-full px-6">
+                              <div className="p-4 bg-gray-50 rounded-2xl">
+                                 <p className="text-xs text-gray-500 mb-1">Hỗ trợ 24/7</p>
+                                 <p className="text-sm font-bold text-gray-900">+84 966 376 155</p>
+                              </div>
+                           </div>
+                        </SheetContent>
+                     </Sheet>
+                  </div>
                </div>
             </div>
          </div>

@@ -1,3 +1,10 @@
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuSeparator,
+   DropdownMenuTrigger,
+} from '@radix-ui/react-dropdown-menu';
 import Link from 'next/link';
 
 export default function HeaderSkeleton() {
@@ -84,21 +91,76 @@ export default function HeaderSkeleton() {
                      </Link>
                   </nav>
 
-                  <div className="flex gap-3">
-                     <Link
-                        href="/login"
-                        className="rounded-xl px-4 py-2 text-sm font-medium border border-zinc-300 text-zinc-800 hover:border-zinc-400 hover:bg-zinc-50 transition-all cursor-pointer"
-                     >
-                        Đăng nhập
-                     </Link>
+                  <DropdownMenu>
+                     <DropdownMenuTrigger asChild>
+                        <button className="flex items-center gap-2 p-2 border border-gray-200 rounded-full hover:shadow-md transition-all duration-200 bg-white focus:outline-none">
+                           <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-5 h-5 text-gray-600 ml-1"
+                           >
+                              <path
+                                 strokeLinecap="round"
+                                 strokeLinejoin="round"
+                                 d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                              />
+                           </svg>
 
-                     <Link
-                        href="/register"
-                        className="rounded-xl px-4 py-2 text-sm font-medium bg-zinc-900 text-white hover:bg-black transition-all shadow-sm cursor-pointer"
+                           <div className="bg-gray-500 text-white rounded-full p-1">
+                              <svg
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 24 24"
+                                 fill="currentColor"
+                                 className="w-5 h-5"
+                              >
+                                 <path
+                                    fillRule="evenodd"
+                                    d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                                    clipRule="evenodd"
+                                 />
+                              </svg>
+                           </div>
+                        </button>
+                     </DropdownMenuTrigger>
+
+                     <DropdownMenuContent
+                        align="end"
+                        sideOffset={8}
+                        className="w-56 rounded-xl border border-gray-100 shadow-xl py-2"
                      >
-                        Đăng ký
-                     </Link>
-                  </div>
+                        <DropdownMenuItem asChild>
+                           <Link
+                              href="/login"
+                              className="px-4 py-3 text-sm font-semibold text-gray-700 cursor-pointer"
+                           >
+                              Đăng nhập
+                           </Link>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem asChild>
+                           <Link
+                              href="/register"
+                              className="px-4 py-3 text-sm text-gray-600 cursor-pointer"
+                           >
+                              Đăng ký
+                           </Link>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem asChild>
+                           <Link
+                              href="/help"
+                              className="px-4 py-3 text-sm text-gray-600 cursor-pointer"
+                           >
+                              Trung tâm trợ giúp
+                           </Link>
+                        </DropdownMenuItem>
+                     </DropdownMenuContent>
+                  </DropdownMenu>
                </div>
             </div>
          </div>

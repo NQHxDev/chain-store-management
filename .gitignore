@@ -22,6 +22,7 @@ dist/
 scripts/
 .env*
 !.env.example
+logs/
 
 # misc
 .DS_Store

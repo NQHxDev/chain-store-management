@@ -9,8 +9,9 @@ dotenv.config({
 });
 
 import { AppError } from '@/appError';
+import logger from '@/loggers/winstonLog';
 
-export const errorHandler = (err: Error, req, res, next) => {
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
    const isAppError = err instanceof AppError;
 
    const logPayload = {
@@ -18,7 +19,6 @@ export const errorHandler = (err: Error, req, res, next) => {
          method: req.method,
          path: req.originalUrl,
          ip: req.ip,
-         requestId: req.id,
       },
       error: {
          name: err.name,
@@ -31,8 +31,16 @@ export const errorHandler = (err: Error, req, res, next) => {
 
    if (!isAppError || !err.isOperational) {
       appLogger.fatal(logPayload, 'Unhandled exception');
+      // logger.error('Unhandled exception', {
+      //    ...logPayload,
+      //    type: 'CriticalError',
+      // });
    } else {
       appLogger.error(logPayload, 'Operational error');
+      // logger.warn('Operational error', {
+      //    ...logPayload,
+      //    type: 'OperationalError',
+      // });
    }
 
    if (isAppError) {

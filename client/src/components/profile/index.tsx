@@ -24,7 +24,10 @@ export default function ProfileForm() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
          {/* Navigation Tabs */}
          <div className="border-b border-gray-200">
-            <nav className="flex items-center space-x-5 px-6 py-3" aria-label="Tabs">
+            <nav
+               className="flex items-center space-x-5 px-6 py-3 overflow-x-auto no-scrollbar"
+               aria-label="Tabs"
+            >
                <Button
                   variant={activeSection === 'personal' ? 'default' : 'ghost'}
                   className={`gap-2 flex items-center justify-center ${

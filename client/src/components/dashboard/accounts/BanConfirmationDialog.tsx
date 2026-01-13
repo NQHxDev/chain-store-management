@@ -52,7 +52,9 @@ export default function DeleteConfirmationDialog({
                   <p>
                      <span className="font-medium">Email:</span> {user?.email}
                   </p>
-                  <p>{/* <span className="font-medium">Vai trò:</span> {user?.roles} */}</p>
+                  <p>
+                     <span className="font-medium">Vai trò:</span> {user?.role}
+                  </p>
                   <p>
                      <span className="font-medium">Trạng thái:</span> {user?.status}
                   </p>

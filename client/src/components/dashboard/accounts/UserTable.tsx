@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { MoreVertical, Edit, Trash2, Eye, Mail, Phone } from 'lucide-react';
+import { MoreVertical, Edit, Eye, Mail, Phone, Ban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
    Table,
@@ -99,6 +99,7 @@ export default function UserTable({ search, status, role }: UserTableProps) {
    const getRoleText = (role: string) => {
       switch (role) {
          case 'admin':
+         case 'manager':
             return 'Quản trị viên';
          case 'moderator':
             return 'Điều hành viên';
@@ -198,8 +199,8 @@ export default function UserTable({ search, status, role }: UserTableProps) {
                                     onClick={() => handleDelete(user)}
                                     className="text-red-600 focus:text-red-600"
                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Xóa
+                                    <Ban className="h-4 w-4 mr-2 text-red-500" />
+                                    Ban tài khoản
                                  </DropdownMenuItem>
                               </DropdownMenuContent>
                            </DropdownMenu>

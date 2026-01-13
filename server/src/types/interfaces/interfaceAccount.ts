@@ -31,7 +31,7 @@ export interface IOauth {
    provider_user_id: string | number;
 }
 
-export interface IAccountRequest extends Request {
+export interface IAuthRegisterRequest extends Request {
    email: string;
    username: string;
    password: string;

@@ -1,3 +1,5 @@
+import logger from '@/loggers/winstonLog';
+
 export class AppError extends Error {
    public statusCode: number;
    public isOperational: boolean;

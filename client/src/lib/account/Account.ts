@@ -15,8 +15,8 @@ export interface DashboardUser {
    email: string;
    phone: string;
    avatar?: string;
-   role: 'admin' | 'user' | 'moderator';
-   status: 'active' | 'inactive' | 'pending';
+   role: string;
+   status: string;
 
    created_at: string;
 }

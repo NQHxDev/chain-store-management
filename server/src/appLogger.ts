@@ -7,7 +7,7 @@ dotenv.config({
 });
 
 export const appLogger = pino({
-   level: process.env.LOG_LEVEL ?? 'info',
+   level: process.env.NODE_ENV === 'production' ? 'error' : process.env.LOG_LEVEL ?? 'info',
    transport:
       process.env.NODE_ENV !== 'production'
          ? {
