@@ -12,3 +12,19 @@ export interface IRegisterDTO {
    password: string;
    confirmPassword: string;
 }
+
+export interface ILoginDTO {
+   identifier: string;
+   password: string;
+}
+
+export interface IAuthResponse {
+   user: ITokenPayload;
+   token: {
+      accessToken: string;
+      refreshToken: string;
+   };
+   sessionId: string;
+
+   createAt?: string;
+}

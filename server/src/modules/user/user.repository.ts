@@ -74,4 +74,60 @@ export class UserRepository {
          throw error;
       }
    }
+
+   async getInfoUserLogin(identifier: string, isEmail: boolean) {
+      try {
+         const user = await this.prismaService.user.findFirst({
+            where: {
+               OR: [
+                  { email: isEmail ? identifier : undefined },
+                  { username: !isEmail ? identifier : undefined },
+               ],
+            },
+            select: {
+               userId: true,
+               passwordHash: true,
+            },
+         });
+
+         return user;
+      } catch (error) {
+         console.error('Error:', error);
+         throw error;
+      }
+   }
+
+   async getUserIdByUsername(username: string): Promise<string | null> {
+      try {
+         const user = await this.prismaService.user.findUnique({
+            where: {
+               username: username,
+            },
+            select: {
+               userId: true,
+            },
+         });
+         return user?.userId || null;
+      } catch (error) {
+         console.error('Error:', error);
+         throw error;
+      }
+   }
+
+   async getUserIdByEmail(email: string): Promise<string | null> {
+      try {
+         const user = await this.prismaService.user.findUnique({
+            where: {
+               email: email,
+            },
+            select: {
+               userId: true,
+            },
+         });
+         return user?.userId || null;
+      } catch (error) {
+         console.error('Error:', error);
+         throw error;
+      }
+   }
 }

@@ -31,6 +31,8 @@ class EnvConfigSchema {
    ACCESS_TOKEN_EXPIRE: JwtSignOptions['expiresIn'];
    @IsString()
    REFRESH_TOKEN_EXPIRE: JwtSignOptions['expiresIn'];
+   @IsString()
+   HASH_SECRET: string;
 }
 
 const envConfig = plainToInstance(EnvConfigSchema, process.env, {

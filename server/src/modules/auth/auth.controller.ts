@@ -2,13 +2,14 @@ import { ITokenPayload } from '@/modules/auth/auth.interface';
 import { UserRepository } from '@/modules/user/user.repository';
 import BaseResponse from '@/shared/base.response';
 import { JWTService } from '@/shared/services/jwt.service';
-import { Body, Controller, Get, HttpStatus, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Inject, Post, UseInterceptors } from '@nestjs/common';
 import ms from 'ms';
 import { uuidv7 } from 'uuidv7';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
-import { RegisterValidation } from '@/modules/auth/auth.validation';
+import { LoginValidation, RegisterValidation } from '@/modules/auth/auth.validation';
 import { AuthService } from '@/modules/auth/auth.service';
+import { AuthInterceptor } from '@/modules/auth/auth.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -63,5 +64,11 @@ export class AuthController {
    @Post('register')
    register(@Body() registerBody: RegisterValidation) {
       return this.authService.register(registerBody);
+   }
+
+   @UseInterceptors(AuthInterceptor)
+   @Post('login')
+   login(@Body() loginBody: LoginValidation) {
+      return this.authService.login(loginBody);
    }
 }
