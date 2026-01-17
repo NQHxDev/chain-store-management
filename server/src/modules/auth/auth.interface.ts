@@ -28,3 +28,8 @@ export interface IAuthResponse {
 
    createAt?: string;
 }
+
+export interface SessionData {
+   refreshToken: string;
+   user: ITokenPayload;
+}

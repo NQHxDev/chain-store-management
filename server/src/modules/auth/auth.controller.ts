@@ -1,22 +1,26 @@
-import { ITokenPayload } from '@/modules/auth/auth.interface';
-import { UserRepository } from '@/modules/user/user.repository';
 import BaseResponse from '@/shared/base.response';
-import { JWTService } from '@/shared/services/jwt.service';
-import { Body, Controller, Get, HttpStatus, Inject, Post, UseInterceptors } from '@nestjs/common';
-import ms from 'ms';
-import { uuidv7 } from 'uuidv7';
+import {
+   Body,
+   Controller,
+   Delete,
+   Get,
+   HttpStatus,
+   Inject,
+   Post,
+   Put,
+   UseInterceptors,
+} from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import { LoginValidation, RegisterValidation } from '@/modules/auth/auth.validation';
 import { AuthService } from '@/modules/auth/auth.service';
-import { AuthInterceptor } from '@/modules/auth/auth.interceptor';
+import { AuthClearCookieInterceptor, AuthInterceptor } from '@/modules/auth/auth.interceptor';
+import { GetDeviceInfo, GetSessionId } from '@/modules/auth/auth.decorator';
 
 @Controller('auth')
 export class AuthController {
    constructor(
       private readonly authService: AuthService,
-      private readonly jwtService: JWTService,
-      private readonly userRepository: UserRepository,
       @Inject(CACHE_MANAGER) private cacheManager: Cache
    ) {}
 
@@ -26,39 +30,9 @@ export class AuthController {
    }
 
    @Post('check')
-   async check() {
-      const userInfo = await this.userRepository.getInfoUserForPayload(
-         '019bcb3d-1e1b-7cdf-bc74-a9cefa875528'
-      );
-      if (userInfo) {
-         const newPayload: ITokenPayload = {
-            userId: userInfo.userId,
-            status: userInfo.status,
-            role: userInfo.role,
-
-            createAt: new Date().toISOString(),
-         };
-
-         const sessionId = uuidv7();
-
-         const newToken = await this.jwtService.signToken(newPayload, 'NQHxZeionDev', ms('1m'));
-
-         const tokenData = await this.jwtService.verifyToken(newToken, 'NQHxZeionDev');
-
-         await this.cacheManager.set(
-            `user:${userInfo.userId}:session:${sessionId}`,
-            newPayload,
-            ms('1m')
-         );
-
-         return BaseResponse.success(
-            { newToken, tokenData, sessionId },
-            'Sign & Verify Token Successful ...',
-            HttpStatus.OK
-         );
-      }
-
-      return BaseResponse.message('Sign & Verify Token Failed ...', HttpStatus.UNAUTHORIZED);
+   check(@GetSessionId() sessionId: string, @GetDeviceInfo() deviceInfo: unknown) {
+      // return BaseResponse.message(`SessionId:${sessionId}`, HttpStatus.OK);
+      return BaseResponse.success(deviceInfo, `SessionId:${sessionId}`, HttpStatus.OK);
    }
 
    @Post('register')
@@ -68,7 +42,20 @@ export class AuthController {
 
    @UseInterceptors(AuthInterceptor)
    @Post('login')
-   login(@Body() loginBody: LoginValidation) {
-      return this.authService.login(loginBody);
+   login(@Body() loginBody: LoginValidation, @GetDeviceInfo() deviceInfo: unknown) {
+      return this.authService.login(loginBody, deviceInfo);
    }
+
+   @UseInterceptors(AuthClearCookieInterceptor)
+   @Delete('logout')
+   logout(@GetSessionId() sessionId: string) {
+      return this.authService.logout(sessionId);
+   }
+
+   @UseInterceptors(AuthInterceptor)
+   @Put('access')
+   access(@GetSessionId() sessionId: string) {}
+
+   @Put('refresh')
+   refresh() {}
 }

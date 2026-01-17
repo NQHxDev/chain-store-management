@@ -3,6 +3,7 @@ import {
    ILoginDTO,
    IRegisterDTO,
    ITokenPayload,
+   SessionData,
 } from '@/modules/auth/auth.interface';
 import { IUser } from '@/modules/user/user.interface';
 import { UserRepository } from '@/modules/user/user.repository';
@@ -66,7 +67,7 @@ export class AuthService {
       return BaseResponse.success(result, 'Đăng ký tài khoản thành công', HttpStatus.CREATED);
    }
 
-   async login(loginBody: ILoginDTO) {
+   async login(loginBody: ILoginDTO, deviceInfo: unknown) {
       const isEmail = loginBody.identifier.includes('@');
 
       const userLogin = await this.userRepository.getInfoUserLogin(loginBody.identifier, isEmail);
@@ -90,11 +91,11 @@ export class AuthService {
          return BaseResponse.message('Không thể khởi tạo phiên đăng nhập', HttpStatus.UNAUTHORIZED);
       }
 
-      const authResponse = await this.authResponse(userInfo);
+      const authResponse = await this.authResponse(userInfo, deviceInfo);
       return BaseResponse.success(authResponse, 'Đăng nhập thành công', HttpStatus.OK);
    }
 
-   private async authResponse(userData: ITokenPayload) {
+   private async authResponse(userData: ITokenPayload, deviceInfo: unknown) {
       const sessionId = uuidv7();
       const refreshToken = uuidv7();
 
@@ -108,14 +109,17 @@ export class AuthService {
 
       await this.cacheManager.set(
          `user:${userData.userId}:session:${sessionId}`,
-         userData,
+         deviceInfo,
          ms(timeLifeRefreshToken)
       );
 
       const hashedRefreshToken = await HashingService.hashValue(refreshToken);
       await this.cacheManager.set(
-         `session:${sessionId}:refreshToken`,
-         hashedRefreshToken,
+         `session:${sessionId}`,
+         {
+            refreshToken: hashedRefreshToken,
+            user: userData,
+         },
          ms(timeLifeRefreshToken)
       );
 
@@ -131,5 +135,21 @@ export class AuthService {
       };
 
       return response;
+   }
+
+   async logout(sessionId: string) {
+      const sessionRaw = await this.cacheManager.get(`session:${sessionId}`);
+
+      if (!sessionRaw) {
+         return BaseResponse.message('Đăng xuất thành công', HttpStatus.OK);
+      }
+      const sessionValue = (
+         typeof sessionRaw === 'string' ? JSON.parse(sessionRaw) : sessionRaw
+      ) as SessionData;
+
+      await this.cacheManager.del(`user:${sessionValue.user.userId}:session:${sessionId}`);
+      await this.cacheManager.del(`session:${sessionId}`);
+
+      return BaseResponse.message('Đăng xuất thành công', HttpStatus.OK);
    }
 }

@@ -45,3 +45,32 @@ export class AuthInterceptor implements NestInterceptor {
       );
    }
 }
+
+@Injectable()
+export class AuthClearCookieInterceptor implements NestInterceptor {
+   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+      return next.handle().pipe(
+         map((data) => {
+            const response = context.switchToHttp().getResponse();
+
+            //! SetOption giống với lúc cho vào Cookie
+            const cookieOptions = {
+               httpOnly: true,
+               secure: envConfig.NODE_ENV === 'production',
+               sameSite: envConfig.NODE_ENV === 'production' ? 'strict' : 'lax',
+            };
+
+            // Tiến hành xóa cookie
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            response.clearCookie('accessToken', cookieOptions);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            response.clearCookie('refreshToken', cookieOptions);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            response.clearCookie('sessionId', cookieOptions);
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return data;
+         })
+      );
+   }
+}
