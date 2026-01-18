@@ -32,15 +32,12 @@ export class JWTService {
     * @param {string} secretKey khoá bí mật của Token
     *
     * @return {ITokenPayload} là một Payload chứa các dữ liệu đã truyền vào trước đó
+    * @return {exp & iat} các thông số đi kèm để xác định thông tin của Token
     */
    async verifyToken(
       tokenValue: string,
       secretKey: string
-   ): Promise<{
-      data: ITokenPayload;
-      exp: number;
-      iat: number;
-   }> {
+   ): Promise<ITokenPayload & {exp: number, iat: number}> {
       return await this.jwtService.verifyAsync(tokenValue, {
          secret: secretKey,
       });

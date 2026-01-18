@@ -29,9 +29,9 @@ export class AuthInterceptor implements NestInterceptor {
                });
             }
 
-            if (data.data?.sessionId) {
+            if (data.data?.payload.sessionId) {
                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-               response.cookie('sessionId', data.data.sessionId, {
+               response.cookie('sessionId', data.data.payload.sessionId, {
                   httpOnly: true,
                   secure: envConfig.NODE_ENV === 'production',
                   sameSite: envConfig.NODE_ENV === 'production' ? 'strict' : 'lax',

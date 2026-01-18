@@ -18,11 +18,13 @@ class BaseResponse {
    static error<E>(
       error: E,
       message: string = '',
-      statusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
+      statusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+      code: string = ''
    ) {
       return {
          status: false,
          statusCode: statusCode,
+         code: code,
          error: error,
          message: message,
          createAt: this.getTimeString(),

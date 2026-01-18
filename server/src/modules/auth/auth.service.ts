@@ -2,8 +2,8 @@ import {
    IAuthResponse,
    ILoginDTO,
    IRegisterDTO,
+   ISessionData,
    ITokenPayload,
-   SessionData,
 } from '@/modules/auth/auth.interface';
 import { IUser } from '@/modules/user/user.interface';
 import { UserRepository } from '@/modules/user/user.repository';
@@ -12,7 +12,7 @@ import envConfig from '@/shared/envConfig';
 import { HashingService } from '@/shared/services/hashing.service';
 import { JWTService } from '@/shared/services/jwt.service';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import ms, { StringValue } from 'ms';
 import { uuidv7 } from 'uuidv7';
 
@@ -79,6 +79,7 @@ export class AuthService {
          userLogin.passwordHash,
          loginBody.password
       );
+
       if (!isMatchPassword) {
          return BaseResponse.message(
             'Tài khoản hoặc Mật khẩu không chính xác',
@@ -90,46 +91,64 @@ export class AuthService {
       if (!userInfo) {
          return BaseResponse.message('Không thể khởi tạo phiên đăng nhập', HttpStatus.UNAUTHORIZED);
       }
+      const sessionId = uuidv7();
 
-      const authResponse = await this.authResponse(userInfo, deviceInfo);
+      const authResponse = await this.authResponse(sessionId, userInfo.userId, deviceInfo);
       return BaseResponse.success(authResponse, 'Đăng nhập thành công', HttpStatus.OK);
    }
 
-   private async authResponse(userData: ITokenPayload, deviceInfo: unknown) {
-      const sessionId = uuidv7();
-      const refreshToken = uuidv7();
+   private async authResponse(sessionId: string, userId: string, deviceInfo: unknown) {
+      const timeLifeRefreshToken = (envConfig.REFRESH_TOKEN_EXPIRE as StringValue) || '1h';
 
-      const timeLifeAccessToken = (envConfig.ACCESS_TOKEN_EXPIRE as StringValue) || '1h';
-      const timeLifeRefreshToken = (envConfig.ACCESS_TOKEN_EXPIRE as StringValue) || '1h';
+      const tokenPayload = await this.userRepository.getInfoUserForPayload(userId);
+      if (!tokenPayload) {
+         throw new NotFoundException('Không tìm thấy tài khoản để Refresh');
+      }
+      tokenPayload.sessionId = sessionId;
+
       const accessToken = await this.jwtService.signToken(
-         userData,
+         tokenPayload,
          envConfig.ACCESS_TOKEN_SECRET,
-         ms(timeLifeAccessToken)
+         envConfig.ACCESS_TOKEN_EXPIRE
       );
 
+      /**
+       * Cache phiên đăng nhập cho 1 thiết bị
+       * Có thể đăng nhập trên nhiều thiết bị cùng 1 lúc
+       * Phù hợp với Đổi mật khẩu hay Logout trên nhiều thiết bị
+       * Dễ Rotate hơn khi phát hiện thiết bị lạ
+       */
       await this.cacheManager.set(
-         `user:${userData.userId}:session:${sessionId}`,
+         `user:${tokenPayload.userId}:session:${sessionId}`,
          deviceInfo,
          ms(timeLifeRefreshToken)
       );
 
+      // Rotate một RefreshToken mới nhằm đảm bảo an toàn hơn
+      const refreshToken = uuidv7();
+      // Hash Token lại trước khi Cache tăng tính bảo mật và tính toàn vẹn của Token
       const hashedRefreshToken = await HashingService.hashValue(refreshToken);
+
+      /**
+       * Khởi tạo 1 phiên đăng nhập mới
+       * Lưu lại sessionId làm Key để sau này dễ tìm kiếm và Rotate
+       * Kiểm soát tốt việc Token bị đánh cắp và tái sử dụng
+       */
       await this.cacheManager.set(
          `session:${sessionId}`,
          {
-            refreshToken: hashedRefreshToken,
-            user: userData,
+            refreshTokenHash: hashedRefreshToken,
+            user: tokenPayload,
          },
          ms(timeLifeRefreshToken)
       );
 
       const response: IAuthResponse = {
-         user: userData,
+         payload: tokenPayload,
          token: {
             accessToken: accessToken,
             refreshToken: refreshToken,
          },
-         sessionId: sessionId,
 
          createAt: new Date().toISOString(),
       };
@@ -141,15 +160,63 @@ export class AuthService {
       const sessionRaw = await this.cacheManager.get(`session:${sessionId}`);
 
       if (!sessionRaw) {
-         return BaseResponse.message('Đăng xuất thành công', HttpStatus.OK);
+         return BaseResponse.message('Đăng xuất thành công', HttpStatus.NO_CONTENT);
       }
       const sessionValue = (
          typeof sessionRaw === 'string' ? JSON.parse(sessionRaw) : sessionRaw
-      ) as SessionData;
+      ) as ISessionData;
 
       await this.cacheManager.del(`user:${sessionValue.user.userId}:session:${sessionId}`);
       await this.cacheManager.del(`session:${sessionId}`);
 
-      return BaseResponse.message('Đăng xuất thành công', HttpStatus.OK);
+      return BaseResponse.message('Đăng xuất thành công', HttpStatus.NO_CONTENT);
+   }
+
+   async refresh(sessionId: string, refreshToken: string, deviceInfo: unknown) {
+      const sessionData: ISessionData | undefined = await this.cacheManager.get(
+         `session:${sessionId}`
+      );
+      if (!sessionData) {
+         console.log('NQHxLog sessionData:', sessionData);
+         return await this.logout(sessionId);
+      }
+
+      const isMatchToken = await HashingService.verifyValue(
+         sessionData.refreshTokenHash,
+         refreshToken
+      );
+      if (!isMatchToken) {
+         return await this.logout(sessionId);
+      }
+
+      const authResponse = await this.authResponse(sessionId, sessionData.user.userId, deviceInfo);
+
+      return BaseResponse.success(authResponse, 'Refresh thành công', HttpStatus.OK);
+   }
+
+   async access(tokenPayload: ITokenPayload) {
+      const sessionId = tokenPayload.sessionId;
+      if (!sessionId) {
+         return BaseResponse.message('SessionId không xác định', HttpStatus.NOT_FOUND);
+      }
+
+      const sessionData: ISessionData | undefined = await this.cacheManager.get(
+         `session:${sessionId}`
+      );
+      if (!sessionData) {
+         return await this.logout(sessionId);
+      }
+
+      const payload = await this.userRepository.getInfoUserForPayload(sessionData.user.userId);
+      if (!payload) {
+         return BaseResponse.message('Không tìm thấy tài khoản để Refresh', HttpStatus.NOT_FOUND);
+      }
+      payload.sessionId = sessionId;
+
+      const response: IAuthResponse = {
+         payload: payload,
+         createAt: new Date().toISOString(),
+      };
+      return BaseResponse.success(response, 'Refresh thành công', HttpStatus.OK);
    }
 }

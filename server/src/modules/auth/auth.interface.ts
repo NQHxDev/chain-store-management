@@ -3,6 +3,7 @@ export interface ITokenPayload {
    status: string;
    role: string;
 
+   sessionId?: string;
    createAt?: string;
 }
 
@@ -19,17 +20,15 @@ export interface ILoginDTO {
 }
 
 export interface IAuthResponse {
-   user: ITokenPayload;
-   token: {
+   payload: ITokenPayload;
+   token?: {
       accessToken: string;
       refreshToken: string;
    };
-   sessionId: string;
-
    createAt?: string;
 }
 
-export interface SessionData {
-   refreshToken: string;
+export interface ISessionData {
+   refreshTokenHash: string;
    user: ITokenPayload;
 }

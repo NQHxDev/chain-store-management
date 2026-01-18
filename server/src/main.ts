@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { TransformInterceptor } from '@/shared/transform.interceptor';
 import { CustomValidation } from '@/shared/custom.validation';
 import cookieParser from 'cookie-parser';
+import { GlobalExceptionFilter } from '@/shared/exception.filter';
 
 async function bootstrap() {
    const app = await NestFactory.create(AppModule);
@@ -21,6 +22,7 @@ async function bootstrap() {
          transform: true,
       })
    );
+   app.useGlobalFilters(new GlobalExceptionFilter());
 
    await app.listen(envConfig.PORT_SV ?? 3000);
 }

@@ -8,6 +8,7 @@ import {
    Inject,
    Post,
    Put,
+   UseGuards,
    UseInterceptors,
 } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -15,7 +16,14 @@ import type { Cache } from 'cache-manager';
 import { LoginValidation, RegisterValidation } from '@/modules/auth/auth.validation';
 import { AuthService } from '@/modules/auth/auth.service';
 import { AuthClearCookieInterceptor, AuthInterceptor } from '@/modules/auth/auth.interceptor';
-import { GetDeviceInfo, GetSessionId } from '@/modules/auth/auth.decorator';
+import {
+   GetDeviceInfo,
+   GetRefreshToken,
+   GetSessionId,
+   GetTokenPayload,
+} from '@/modules/auth/auth.decorator';
+import { AccessTokenGuard } from '@/shared/guards/token.guard';
+import type { ITokenPayload } from '@/modules/auth/auth.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -30,9 +38,12 @@ export class AuthController {
    }
 
    @Post('check')
-   check(@GetSessionId() sessionId: string, @GetDeviceInfo() deviceInfo: unknown) {
-      // return BaseResponse.message(`SessionId:${sessionId}`, HttpStatus.OK);
-      return BaseResponse.success(deviceInfo, `SessionId:${sessionId}`, HttpStatus.OK);
+   check(
+      // @GetSessionId() sessionId: string,
+      @GetDeviceInfo() deviceInfo: unknown,
+      @GetRefreshToken() refreshToken: string
+   ) {
+      return BaseResponse.success(deviceInfo, `RefreshToken: ${refreshToken}`, HttpStatus.OK);
    }
 
    @Post('register')
@@ -52,10 +63,19 @@ export class AuthController {
       return this.authService.logout(sessionId);
    }
 
-   @UseInterceptors(AuthInterceptor)
+   @UseGuards(AccessTokenGuard)
    @Put('access')
-   access(@GetSessionId() sessionId: string) {}
+   access(@GetTokenPayload() tokenPayload: ITokenPayload) {
+      return this.authService.access(tokenPayload);
+   }
 
+   @UseInterceptors(AuthInterceptor)
    @Put('refresh')
-   refresh() {}
+   refresh(
+      @GetSessionId() sessionId: string,
+      @GetRefreshToken() refreshToken: string,
+      @GetDeviceInfo() deviceInfo: unknown
+   ) {
+      return this.authService.refresh(sessionId, refreshToken, deviceInfo);
+   }
 }
